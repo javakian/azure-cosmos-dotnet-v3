@@ -252,9 +252,11 @@ namespace Microsoft.Azure.Cosmos
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<HttpHeader> EnumerateHeaders()
+        protected override IEnumerable<HttpHeader> EnumerateHeaders() => this.CosmosHeaders.GetHttpHeaders();
+
+        private static string JoinHeaderValue(IEnumerable<string> values)
         {
-            throw new NotImplementedException();
+            return string.Join(",", values);
         }
     }
 }

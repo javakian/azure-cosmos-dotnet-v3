@@ -10,6 +10,7 @@ namespace Microsoft.Azure.Cosmos
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using global::Azure.Core.Http;
     using Microsoft.Azure.Documents;
 
     /// <summary>
@@ -196,6 +197,15 @@ namespace Microsoft.Azure.Cosmos
         public virtual IEnumerator<string> GetEnumerator()
         {
             return this.messageHeaders.Value.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Enumerates all the HTTP headers names in the <see cref="CosmosHeaders"/>.
+        /// </summary>
+        /// <returns>An enumator for all headers.</returns>
+        public virtual IEnumerable<HttpHeader> GetHttpHeaders()
+        {
+            return this.messageHeaders.Value.GetHttpHeaders();
         }
 
         /// <summary>

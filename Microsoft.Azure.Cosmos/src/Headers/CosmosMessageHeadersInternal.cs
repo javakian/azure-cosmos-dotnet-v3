@@ -11,6 +11,7 @@ namespace Microsoft.Azure.Cosmos
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using global::Azure.Core.Http;
     using Microsoft.Azure.Documents.Collections;
 
     /// <summary>
@@ -238,6 +239,34 @@ namespace Microsoft.Azure.Cosmos
                 while (headerIterator.MoveNext())
                 {
                     yield return headerIterator.Current;
+                }
+            }
+        }
+
+        public IEnumerable<HttpHeader> GetHttpHeaders()
+        {
+            using (var customHeaderIterator = this.knownHeaders.GetEnumerator())
+            {
+                while (customHeaderIterator.MoveNext())
+                {
+                    string customValue = customHeaderIterator.Current.Value.Get();
+                    if (!string.IsNullOrEmpty(customValue))
+                    {
+                        yield return new HttpHeader(customHeaderIterator.Current.Key, customHeaderIterator.Current.Value.Get());
+                    }
+                }
+            }
+
+            if (!this.headers.IsValueCreated)
+            {
+                yield break;
+            }
+
+            using (IEnumerator<KeyValuePair<string, string>> headerIterator = this.headers.Value.GetEnumerator())
+            {
+                while (headerIterator.MoveNext())
+                {
+                    yield return new HttpHeader(headerIterator.Current.Key, headerIterator.Current.Value);
                 }
             }
         }
