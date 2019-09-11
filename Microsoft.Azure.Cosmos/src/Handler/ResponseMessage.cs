@@ -10,7 +10,6 @@ namespace Microsoft.Azure.Cosmos
     using System.IO;
     using System.Net;
     using global::Azure.Core.Http;
-    using global::Azure.Core.Pipeline;
     using Microsoft.Azure.Documents;
 
     /// <summary>
@@ -137,10 +136,10 @@ namespace Microsoft.Azure.Cosmos
         public override string ReasonPhrase => throw new NotImplementedException();
 
         /// <inheritdoc />
-        public override Stream ContentStream { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override Stream ContentStream { get => this.content; set => this.content = value; }
 
         /// <inheritdoc />
-        public override string ClientRequestId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string ClientRequestId { get; set; }
 
         /// <summary>
         /// Checks if the current <see cref="ResponseMessage"/> has a successful status code, otherwise, throws.
