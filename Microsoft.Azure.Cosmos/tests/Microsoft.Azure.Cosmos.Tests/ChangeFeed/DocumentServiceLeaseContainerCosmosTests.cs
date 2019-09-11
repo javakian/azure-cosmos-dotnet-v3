@@ -64,14 +64,13 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
 
         private static Container GetMockedContainer(string containerName = "myColl")
         {
-            Headers headers = new Headers();
+            CosmosHeaders headers = new CosmosHeaders();
             headers.ContinuationToken = string.Empty;
 
             Mock<FeedResponse<DocumentServiceLeaseCore>> mockFeedResponse = new Mock<FeedResponse<DocumentServiceLeaseCore>>();
             mockFeedResponse.Setup(x => x.ContinuationToken).Returns(string.Empty);
-            mockFeedResponse.Setup(x => x.Headers).Returns(headers);
+            mockFeedResponse.Setup(x => x.CosmosHeaders).Returns(headers);
             mockFeedResponse.Setup(x => x.Resource).Returns(DocumentServiceLeaseContainerCosmosTests.allLeases);
-            mockFeedResponse.Setup(x => x.Headers).Returns(headers);
             mockFeedResponse.Setup(x => x.GetEnumerator()).Returns(DocumentServiceLeaseContainerCosmosTests.allLeases.GetEnumerator());
 
             Mock<FeedIterator<DocumentServiceLeaseCore>> mockedQuery = new Mock<FeedIterator<DocumentServiceLeaseCore>>();

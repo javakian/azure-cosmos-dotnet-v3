@@ -44,7 +44,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             IJsonNavigatorNode jsonNavigatorNode = jsonNavigator.GetRootNode();
             CosmosArray cosmosArray = CosmosArray.Create(jsonNavigator, jsonNavigatorNode);
 
-            Headers headers = new Headers();
+            CosmosHeaders headers = new CosmosHeaders();
             headers.ContinuationToken = continuationToken;
             headers.ActivityId = Guid.NewGuid().ToString();
 
@@ -84,7 +84,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             IJsonNavigatorNode jsonNavigatorNode = jsonNavigator.GetRootNode();
             CosmosArray cosmosArray = CosmosArray.Create(jsonNavigator, jsonNavigatorNode);
 
-            Headers headers = new Headers();
+            CosmosHeaders headers = new CosmosHeaders();
             headers.ContinuationToken = continuationToken;
             headers.ActivityId = Guid.NewGuid().ToString();
 

@@ -74,8 +74,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 using (ResponseMessage responseMessage =
                     await feedIterator.ReadNextAsync(this.cancellationToken))
                 {
-                    lastcontinuation = responseMessage.Headers.ContinuationToken;
-                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.Headers.ContinuationToken);
+                    lastcontinuation = responseMessage.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.CosmosHeaders.ContinuationToken);
                     List<CompositeContinuationToken> deserializedToken = JsonConvert.DeserializeObject<List<CompositeContinuationToken>>(lastcontinuation);
                     currentRange = deserializedToken[0].Range;
                     Assert.AreEqual(pkRangesCount, deserializedToken.Count);
@@ -116,8 +116,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 using (ResponseMessage responseMessage =
                     await setIteratorNew.ReadNextAsync(this.cancellationToken))
                 {
-                    lastcontinuation = responseMessage.Headers.ContinuationToken;
-                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.Headers.ContinuationToken);
+                    lastcontinuation = responseMessage.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.CosmosHeaders.ContinuationToken);
                     currentRange = JsonConvert.DeserializeObject<List<CompositeContinuationToken>>(lastcontinuation)[0].Range;
 
                     if (responseMessage.IsSuccessStatusCode)
@@ -168,8 +168,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 using (ResponseMessage responseMessage =
                     await feedIterator.ReadNextAsync(this.cancellationToken))
                 {
-                    lastcontinuation = responseMessage.Headers.ContinuationToken;
-                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.Headers.ContinuationToken);
+                    lastcontinuation = responseMessage.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.CosmosHeaders.ContinuationToken);
                     List<CompositeContinuationToken> deserializedToken = JsonConvert.DeserializeObject<List<CompositeContinuationToken>>(lastcontinuation);
                     currentRange = deserializedToken[0].Range;
                     if (responseMessage.IsSuccessStatusCode)
@@ -285,8 +285,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 using (ResponseMessage responseMessage =
                     await feedIterator.ReadNextAsync(this.cancellationToken))
                 {
-                    continuationToken = responseMessage.Headers.ContinuationToken;
-                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.Headers.ContinuationToken);
+                    continuationToken = responseMessage.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.CosmosHeaders.ContinuationToken);
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         Collection<ToDoActivity> response = TestCommon.Serializer.FromStream<CosmosFeedResponseUtil<ToDoActivity>>(responseMessage.Content).Data;
@@ -478,7 +478,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 if (this.Iteration++ == 0)
                 {
                     ResponseMessage httpResponse = new ResponseMessage(System.Net.HttpStatusCode.Gone);
-                    httpResponse.Headers.Add(Documents.WFConstants.BackendHeaders.SubStatus, ((uint)Documents.SubStatusCodes.PartitionKeyRangeGone).ToString(CultureInfo.InvariantCulture));
+                    httpResponse.CosmosHeaders.Add(Documents.WFConstants.BackendHeaders.SubStatus, ((uint)Documents.SubStatusCodes.PartitionKeyRangeGone).ToString(CultureInfo.InvariantCulture));
 
                     return Task.FromResult(httpResponse);
                 }

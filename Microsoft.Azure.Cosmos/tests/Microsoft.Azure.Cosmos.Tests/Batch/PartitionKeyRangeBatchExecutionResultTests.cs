@@ -94,7 +94,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             cancellationToken: default(CancellationToken));
 
             ResponseMessage response = new ResponseMessage(statusCode) { Content = responseContent };
-            response.Headers.SubStatusCode = subStatusCode;
+            response.CosmosHeaders.SubStatusCode = subStatusCode;
 
             BatchResponse batchresponse = await BatchResponse.PopulateFromContentAsync(
                 response,

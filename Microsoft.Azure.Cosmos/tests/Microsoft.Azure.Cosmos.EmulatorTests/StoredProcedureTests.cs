@@ -154,7 +154,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 });
 
             Assert.AreEqual(HttpStatusCode.OK, sprocResponse.StatusCode);
-            Assert.AreEqual(testLogsText, Uri.UnescapeDataString(sprocResponse.Headers["x-ms-documentdb-script-log-results"]));
+            Assert.AreEqual(testLogsText, Uri.UnescapeDataString(sprocResponse.CosmosHeaders["x-ms-documentdb-script-log-results"]));
         }
 
         [TestMethod]

@@ -85,8 +85,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             await container.UpsertItemAsync(document);
 
-            ResponseMessage cosmosResponseMessage = await container.ReadItemStreamAsync(document.id, new PartitionKey(document.status));
-            StreamReader reader = new StreamReader(cosmosResponseMessage.Content);
+            global::Azure.Response cosmosResponseMessage = await container.ReadItemStreamAsync(document.id, new PartitionKey(document.status));
+            StreamReader reader = new StreamReader(cosmosResponseMessage.ContentStream);
             string text = reader.ReadToEnd();
 
             Assert.IsTrue(text.IndexOf(nameof(document.description)) > -1, "Stored item doesn't contains null attributes");

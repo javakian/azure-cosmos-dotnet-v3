@@ -9,7 +9,7 @@ namespace Microsoft.Azure.Cosmos.Tests
     using System.Threading.Tasks;
     using Microsoft.Azure.Cosmos.Handlers;
 
-    public class PreProcessingTestHandler : RequestHandler
+    internal class PreProcessingTestHandler : RequestHandler
     {
         internal const string StatusCodeName = "x-test-requesting-statuscode";
 

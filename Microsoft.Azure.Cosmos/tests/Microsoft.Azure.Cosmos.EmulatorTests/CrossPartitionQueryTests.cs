@@ -1005,8 +1005,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             Assert.AreEqual(args.Value, getPropertyValueFunction((SpecialPropertyDocument)returnedDoc));
 
             PartitionKey key = new PartitionKey(args.ValueToPartitionKey(args.Value));
-            response = await container.ReadItemAsync<SpecialPropertyDocument>(response.Resource.id, new Cosmos.PartitionKey(key));
-            returnedDoc = response.Resource;
+            global::Azure.Response<SpecialPropertyDocument> response2 = await container.ReadItemAsync<SpecialPropertyDocument>(response.Resource.id, new Cosmos.PartitionKey(key));
+            returnedDoc = response2.Value;
             Assert.AreEqual(args.Value, getPropertyValueFunction((SpecialPropertyDocument)returnedDoc));
 
             returnedDoc = (await this.RunSinglePartitionQuery<SpecialPropertyDocument>(

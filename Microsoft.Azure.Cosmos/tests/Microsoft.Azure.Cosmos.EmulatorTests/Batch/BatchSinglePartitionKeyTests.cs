@@ -122,13 +122,15 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 TestDoc testDocToReplace = this.GetTestDocCopy(this.TestDocPk1ExistingA);
                 testDocToReplace.Cost++;
 
-                ItemResponse<TestDoc> readResponse = await BatchTestBase.JsonContainer.ReadItemAsync<TestDoc>(
+                global::Azure.Response readResponse = await BatchTestBase.JsonContainer.ReadItemStreamAsync(
                     this.TestDocPk1ExistingA.Id,
                     BatchTestBase.GetPartitionKey(this.PartitionKey1));
 
+                readResponse.Headers.TryGetValue(HttpConstants.HttpHeaders.ETag, out string etag);
+
                 BatchItemRequestOptions firstReplaceOptions = new BatchItemRequestOptions()
                 {
-                    IfMatchEtag = readResponse.ETag
+                    IfMatchEtag = etag
                 };
 
                 BatchResponse batchResponse = await new BatchCore((ContainerCore)container, BatchTestBase.GetPartitionKey(this.PartitionKey1))

@@ -93,8 +93,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 {
                     Assert.IsNotNull(response);
 
-                    lastKnownContinuationToken = response.Headers.ContinuationToken;
-                    Assert.AreEqual(response.ContinuationToken, response.Headers.ContinuationToken);
+                    lastKnownContinuationToken = response.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(response.ContinuationToken, response.CosmosHeaders.ContinuationToken);
                     
                     using (StreamReader reader = new StreamReader(response.Content))
                     {
@@ -132,8 +132,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
                 using (ResponseMessage response = await iter.ReadNextAsync())
                 {
-                    lastKnownContinuationToken = response.Headers.ContinuationToken;
-                    Assert.AreEqual(response.ContinuationToken, response.Headers.ContinuationToken);
+                    lastKnownContinuationToken = response.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(response.ContinuationToken, response.CosmosHeaders.ContinuationToken);
 
                     Assert.IsNotNull(response);
                     using (StreamReader reader = new StreamReader(response.Content))

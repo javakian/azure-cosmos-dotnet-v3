@@ -96,7 +96,7 @@ namespace Microsoft.Azure.Cosmos.Performance.Tests.Benchmarks
             var response = await this.container.ReadItemStreamAsync(
                 Constants.ValidOperationId,
                 new Cosmos.PartitionKey(Constants.ValidOperationId));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (response.Status == (int)System.Net.HttpStatusCode.NotFound)
             {
                 throw new Exception();
             }

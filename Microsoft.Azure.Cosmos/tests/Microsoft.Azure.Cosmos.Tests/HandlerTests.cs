@@ -16,6 +16,7 @@ namespace Microsoft.Azure.Cosmos.Tests
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using global::Azure.Core.Pipeline;
     using Microsoft.Azure.Cosmos.Client.Core.Tests;
     using Microsoft.Azure.Cosmos.Handlers;
     using Microsoft.Azure.Cosmos.Scripts;
@@ -74,9 +75,8 @@ namespace Microsoft.Azure.Cosmos.Tests
                 options.Properties = new Dictionary<string, object>();
                 options.Properties.Add(PreProcessingTestHandler.StatusCodeName, code);
 
-                ItemResponse<object> response = await container.ReadItemAsync<object>("id1", new Cosmos.PartitionKey("pk1"), options);
-                Console.WriteLine($"Got status code {response.StatusCode}");
-                Assert.AreEqual(code, response.StatusCode);
+                global::Azure.Response<object> response = await container.ReadItemAsync<object>("id1", new Cosmos.PartitionKey("pk1"), options);
+                Assert.IsNotNull(response.Value);
             }
 
             // Meta-data operations
@@ -111,7 +111,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             TestHandler testHandler = new TestHandler((request, cancellationToken) =>
             {
                 Assert.AreEqual(propertyValue, request.Properties[PropertyKey]);
-                Assert.AreEqual(Condition, request.Headers.GetValues(HttpConstants.HttpHeaders.IfMatch).First());
+                Assert.AreEqual(Condition, request.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.IfMatch).First());
                 return TestHandler.ReturnSuccess();
             });
 
@@ -119,7 +119,7 @@ namespace Microsoft.Azure.Cosmos.Tests
 
             RequestInvokerHandler invoker = new RequestInvokerHandler(client);
             invoker.InnerHandler = testHandler;
-            RequestMessage requestMessage = new RequestMessage(HttpMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
+            RequestMessage requestMessage = new RequestMessage(RequestMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.PartitionKey, "[]");
             requestMessage.ResourceType = ResourceType.Document;
             requestMessage.OperationType = OperationType.Read;
@@ -159,14 +159,14 @@ namespace Microsoft.Azure.Cosmos.Tests
                 {
                     TestHandler testHandler = new TestHandler((request, cancellationToken) =>
                     {
-                        Assert.AreEqual(level.ToString(), request.Headers[HttpConstants.HttpHeaders.ConsistencyLevel]);
+                        Assert.AreEqual(level.ToString(), request.CosmosHeaders[HttpConstants.HttpHeaders.ConsistencyLevel]);
                         return TestHandler.ReturnSuccess();
                     });
 
                     RequestInvokerHandler invoker = new RequestInvokerHandler(client);
                     invoker.InnerHandler = testHandler;
 
-                    RequestMessage requestMessage = new RequestMessage(HttpMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
+                    RequestMessage requestMessage = new RequestMessage(RequestMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
                     requestMessage.ResourceType = ResourceType.Document;
                     requestMessage.Headers.Add(HttpConstants.HttpHeaders.PartitionKey, "[]");
                     requestMessage.OperationType = OperationType.Read;
@@ -187,14 +187,14 @@ namespace Microsoft.Azure.Cosmos.Tests
 
             TestHandler testHandler = new TestHandler((request, cancellationToken) =>
             {
-                Assert.AreEqual(clientLevel.ToString(), request.Headers[HttpConstants.HttpHeaders.ConsistencyLevel]);
+                Assert.AreEqual(clientLevel.ToString(), request.CosmosHeaders[HttpConstants.HttpHeaders.ConsistencyLevel]);
                 return TestHandler.ReturnSuccess();
             });
 
             RequestInvokerHandler invoker = new RequestInvokerHandler(client);
             invoker.InnerHandler = testHandler;
 
-            RequestMessage requestMessage = new RequestMessage(HttpMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
+            RequestMessage requestMessage = new RequestMessage(RequestMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
             requestMessage.ResourceType = ResourceType.Document;
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.PartitionKey, "[]");
             requestMessage.OperationType = OperationType.Read;
@@ -212,14 +212,14 @@ namespace Microsoft.Azure.Cosmos.Tests
 
             TestHandler testHandler = new TestHandler((request, cancellationToken) =>
             {
-                Assert.AreEqual(requestOptionLevel.ToString(), request.Headers[HttpConstants.HttpHeaders.ConsistencyLevel]);
+                Assert.AreEqual(requestOptionLevel.ToString(), request.CosmosHeaders[HttpConstants.HttpHeaders.ConsistencyLevel]);
                 return TestHandler.ReturnSuccess();
             });
 
             RequestInvokerHandler invoker = new RequestInvokerHandler(client);
             invoker.InnerHandler = testHandler;
 
-            RequestMessage requestMessage = new RequestMessage(HttpMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
+            RequestMessage requestMessage = new RequestMessage(RequestMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
             requestMessage.ResourceType = ResourceType.Document;
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.PartitionKey, "[]");
             requestMessage.OperationType = OperationType.Read;
@@ -242,9 +242,9 @@ namespace Microsoft.Azure.Cosmos.Tests
 
             TestHandler testHandler = new TestHandler((request, cancellationToken) =>
             {
-                Assert.AreEqual(Condition, request.Headers.GetValues(HttpConstants.HttpHeaders.IfNoneMatch).First());
-                Assert.AreEqual(ConsistencyLevel.Eventual.ToString(), request.Headers.GetValues(HttpConstants.HttpHeaders.ConsistencyLevel).First());
-                Assert.AreEqual(SessionToken, request.Headers.GetValues(HttpConstants.HttpHeaders.SessionToken).First());
+                Assert.AreEqual(Condition, request.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.IfNoneMatch).First());
+                Assert.AreEqual(ConsistencyLevel.Eventual.ToString(), request.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.ConsistencyLevel).First());
+                Assert.AreEqual(SessionToken, request.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.SessionToken).First());
                 return TestHandler.ReturnSuccess();
             });
 
@@ -252,7 +252,7 @@ namespace Microsoft.Azure.Cosmos.Tests
 
             RequestInvokerHandler invoker = new RequestInvokerHandler(client);
             invoker.InnerHandler = testHandler;
-            RequestMessage requestMessage = new RequestMessage(HttpMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
+            RequestMessage requestMessage = new RequestMessage(RequestMethod.Get, new System.Uri("https://dummy.documents.azure.com:443/dbs"));
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.PartitionKey, "[]");
             requestMessage.ResourceType = ResourceType.Document;
             requestMessage.OperationType = OperationType.Read;

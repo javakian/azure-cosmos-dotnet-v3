@@ -283,20 +283,20 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             //create and read
             ItemResponse<TestDocument> createResponse = await container.CreateItemAsync<TestDocument>(testDocument);
-            ItemResponse<TestDocument> readResponse = await container.ReadItemAsync<TestDocument>(testDocument.Id, new Cosmos.PartitionKey(testDocument.Name));
-            AssertEqual(testDocument, readResponse.Resource);
+            global::Azure.Response<TestDocument> readResponse = await container.ReadItemAsync<TestDocument>(testDocument.Id, new Cosmos.PartitionKey(testDocument.Name));
+            AssertEqual(testDocument, readResponse.Value);
             AssertEqual(testDocument, createResponse.Resource);
 
             // upsert
             ItemResponse<TestDocument> upsertResponse = await container.UpsertItemAsync<TestDocument>(testDocument);
             readResponse = await container.ReadItemAsync<TestDocument>(testDocument.Id, new Cosmos.PartitionKey(testDocument.Name));
-            AssertEqual(testDocument, readResponse.Resource);
+            AssertEqual(testDocument, readResponse.Value);
             AssertEqual(testDocument, upsertResponse.Resource);
 
             // replace 
             ItemResponse<TestDocument> replacedResponse = await container.ReplaceItemAsync<TestDocument>(testDocument, testDocument.Id);
             readResponse = await container.ReadItemAsync<TestDocument>(testDocument.Id, new Cosmos.PartitionKey(testDocument.Name));
-            AssertEqual(testDocument, readResponse.Resource);
+            AssertEqual(testDocument, readResponse.Value);
             AssertEqual(testDocument, replacedResponse.Resource);
 
             QueryDefinition sql = new QueryDefinition("select * from r");

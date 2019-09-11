@@ -45,8 +45,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             ItemResponse<ToDoActivity> createResponse = await this.Container.CreateItemAsync<ToDoActivity>(item: testItem);
             Assert.IsNotNull(createResponse.Diagnostics);
 
-            ItemResponse<ToDoActivity> readResponse = await this.Container.ReadItemAsync<ToDoActivity>(id: testItem.id, partitionKey: new PartitionKey(testItem.status));
-            Assert.IsNotNull(readResponse.Diagnostics);
+            global::Azure.Response<ToDoActivity> readResponse = await this.Container.ReadItemAsync<ToDoActivity>(id: testItem.id, partitionKey: new PartitionKey(testItem.status));
+            //Assert.IsNotNull(readResponse.Diagnostics);
 
             testItem.description = "NewDescription";
             ItemResponse<ToDoActivity> replaceResponse = await this.Container.ReplaceItemAsync<ToDoActivity>(item: testItem, id: testItem.id, partitionKey: new PartitionKey(testItem.status));
@@ -63,10 +63,10 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 streamPayload: TestCommon.Serializer.ToStream<ToDoActivity>(testItem));
             Assert.IsNotNull(createStreamResponse.Diagnostics);
 
-            ResponseMessage readStreamResponse = await this.Container.ReadItemStreamAsync(
+            global::Azure.Response readStreamResponse = await this.Container.ReadItemStreamAsync(
                 id: testItem.id,
                 partitionKey: new PartitionKey(testItem.status));
-            Assert.IsNotNull(readStreamResponse.Diagnostics);
+            //Assert.IsNotNull(readStreamResponse.Diagnostics);
 
             ResponseMessage replaceStreamResponse = await this.Container.ReplaceItemStreamAsync(
                streamPayload: TestCommon.Serializer.ToStream<ToDoActivity>(testItem),

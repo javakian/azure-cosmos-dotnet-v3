@@ -78,9 +78,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
-                    var itemResponse = new Mock<ItemResponse<DocumentServiceLeaseCore>>();
-                    itemResponse.Setup(i => i.Resource).Returns(leaseToUpdate);
-                    return itemResponse.Object;
+                    return new global::Azure.Response<DocumentServiceLeaseCore>(new ResponseMessage(HttpStatusCode.OK), leaseToUpdate);
                 });
 
             mockedItems.SetupSequence(i => i.ReplaceItemAsync<DocumentServiceLeaseCore>(
@@ -134,9 +132,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
-                    var itemResponse = new Mock<ItemResponse<DocumentServiceLeaseCore>>();
-                    itemResponse.Setup(i => i.Resource).Returns(leaseToUpdate);
-                    return itemResponse.Object;
+                    return new global::Azure.Response<DocumentServiceLeaseCore>(new ResponseMessage(HttpStatusCode.OK), leaseToUpdate);
                 });
 
             mockedItems.Setup(i => i.ReplaceItemAsync<DocumentServiceLeaseCore>(
@@ -171,9 +167,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
-                    var itemResponse = new Mock<ItemResponse<DocumentServiceLeaseCore>>();
-                    itemResponse.Setup(i => i.Resource).Returns(leaseToUpdate);
-                    return itemResponse.Object;
+                    return new global::Azure.Response<DocumentServiceLeaseCore>(new ResponseMessage(HttpStatusCode.OK), leaseToUpdate);
                 });
 
             mockedItems.SetupSequence(i => i.ReplaceItemAsync<DocumentServiceLeaseCore>(
@@ -214,9 +208,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
-                    var itemResponse = new Mock<ItemResponse<DocumentServiceLeaseCore>>();
-                    itemResponse.Setup(i => i.Resource).Returns(leaseToUpdate);
-                    return itemResponse.Object;
+                    return new global::Azure.Response<DocumentServiceLeaseCore>(new ResponseMessage(HttpStatusCode.OK), leaseToUpdate);
                 });
 
             mockedItems.SetupSequence(i => i.ReplaceItemAsync<DocumentServiceLeaseCore>(

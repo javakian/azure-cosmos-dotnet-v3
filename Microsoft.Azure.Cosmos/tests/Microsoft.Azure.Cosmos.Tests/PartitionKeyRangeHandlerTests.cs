@@ -11,6 +11,7 @@ namespace Microsoft.Azure.Cosmos.Client.Core.Tests
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using global::Azure.Core.Pipeline;
     using Microsoft.Azure.Cosmos.Collections;
     using Microsoft.Azure.Cosmos.Common;
     using Microsoft.Azure.Cosmos.Handlers;
@@ -43,13 +44,13 @@ namespace Microsoft.Azure.Cosmos.Client.Core.Tests
 
             TestHandler testHandler = new TestHandler(async (request, cancellationToken) => {
                 ResponseMessage errorResponse = await TestHandler.ReturnStatusCode(HttpStatusCode.Gone);
-                errorResponse.Headers.Remove(HttpConstants.HttpHeaders.Continuation); //Clobber original continuation
+                errorResponse.CosmosHeaders.Remove(HttpConstants.HttpHeaders.Continuation); //Clobber original continuation
                 return errorResponse;
             });
             partitionKeyRangeHandler.InnerHandler = testHandler;
 
             //Pass valid collections path because it is required by DocumentServiceRequest's constructor. This can't be mocked because ToDocumentServiceRequest() is an extension method
-            RequestMessage initialRequest = new RequestMessage(HttpMethod.Get, new Uri($"{Paths.DatabasesPathSegment}/test/{Paths.CollectionsPathSegment}/test", UriKind.Relative));
+            RequestMessage initialRequest = new RequestMessage(RequestMethod.Get, new Uri($"{Paths.DatabasesPathSegment}/test/{Paths.CollectionsPathSegment}/test", UriKind.Relative));
             initialRequest.OperationType = OperationType.ReadFeed;
             initialRequest.Headers.Add(HttpConstants.HttpHeaders.Continuation, Continuation);
             ResponseMessage response = await partitionKeyRangeHandler.SendAsync(initialRequest, CancellationToken.None);
@@ -57,8 +58,8 @@ namespace Microsoft.Azure.Cosmos.Client.Core.Tests
             Assert.IsFalse(response.IsSuccessStatusCode);
             Assert.AreEqual(System.Net.HttpStatusCode.Gone, response.StatusCode);
             //Check if original continuation was restored
-            Assert.AreEqual(Continuation, response.Headers.GetValues(HttpConstants.HttpHeaders.Continuation).First());
-            Assert.AreEqual(Continuation, initialRequest.Headers.GetValues(HttpConstants.HttpHeaders.Continuation).First());
+            Assert.AreEqual(Continuation, response.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.Continuation).First());
+            Assert.AreEqual(Continuation, initialRequest.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.Continuation).First());
         }
 
         [TestMethod]
@@ -80,13 +81,13 @@ namespace Microsoft.Azure.Cosmos.Client.Core.Tests
 
             TestHandler testHandler = new TestHandler(async (request, cancellationToken) => {
                 ResponseMessage successResponse = await TestHandler.ReturnSuccess();
-                successResponse.Headers.Remove(HttpConstants.HttpHeaders.Continuation); //Clobber original continuation
+                successResponse.CosmosHeaders.Remove(HttpConstants.HttpHeaders.Continuation); //Clobber original continuation
                 return successResponse;
             });
             partitionKeyRangeHandler.InnerHandler = testHandler;
 
             //Pass valid collections path because it is required by DocumentServiceRequest's constructor. This can't be mocked because ToDocumentServiceRequest() is an extension method
-            RequestMessage initialRequest = new RequestMessage(HttpMethod.Get, new Uri($"{Paths.DatabasesPathSegment}/test/{Paths.CollectionsPathSegment}/test", UriKind.Relative));
+            RequestMessage initialRequest = new RequestMessage(RequestMethod.Get, new Uri($"{Paths.DatabasesPathSegment}/test/{Paths.CollectionsPathSegment}/test", UriKind.Relative));
             initialRequest.OperationType = OperationType.ReadFeed;
             initialRequest.Headers.Add(HttpConstants.HttpHeaders.Continuation, Continuation);
             ResponseMessage response = await partitionKeyRangeHandler.SendAsync(initialRequest, CancellationToken.None);
@@ -94,8 +95,8 @@ namespace Microsoft.Azure.Cosmos.Client.Core.Tests
             Assert.IsFalse(response.IsSuccessStatusCode);
             Assert.AreEqual(System.Net.HttpStatusCode.ServiceUnavailable, response.StatusCode);
             //Check if original continuation was restored
-            Assert.AreEqual(Continuation, response.Headers.GetValues(HttpConstants.HttpHeaders.Continuation).First());
-            Assert.AreEqual(Continuation, initialRequest.Headers.GetValues(HttpConstants.HttpHeaders.Continuation).First());
+            Assert.AreEqual(Continuation, response.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.Continuation).First());
+            Assert.AreEqual(Continuation, initialRequest.CosmosHeaders.GetValues(HttpConstants.HttpHeaders.Continuation).First());
         }
 
         [TestMethod]

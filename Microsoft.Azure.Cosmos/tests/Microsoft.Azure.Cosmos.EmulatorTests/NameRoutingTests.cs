@@ -826,7 +826,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 ContainerResponse readContainerResponse = await containerResponse.Container.ReadContainerAsync(requestOptions: new ContainerRequestOptions { PopulateQuotaInfo = true });
                 Assert.IsNull(readContainerResponse.Resource);
                 Assert.AreEqual(readContainerResponse.StatusCode, HttpStatusCode.NotFound);
-                Assert.IsNull(readContainerResponse.Headers[HttpConstants.HttpHeaders.RequestValidationFailure]);
+                Assert.IsNull(readContainerResponse.CosmosHeaders[HttpConstants.HttpHeaders.RequestValidationFailure]);
 
             }
             catch (CosmosException ex)
@@ -873,9 +873,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             Container container = await database.CreateContainerAsync(containerSetting);
             try
             {
-                ItemResponse<Document> docIgnore = await container.ReadItemAsync<Document>(docId, new Cosmos.PartitionKey(docId));
-                Assert.IsNull(docIgnore.Resource);
-                Assert.AreEqual(docIgnore.StatusCode, HttpStatusCode.NotFound);
+                await container.ReadItemAsync<Document>(docId, new Cosmos.PartitionKey(docId));
             }
             catch (CosmosException e)
             {
@@ -1046,7 +1044,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             try
             {
                 // the url doesn't conform to the schema at at all.
-                ItemResponse<Document> response = await coll.ReadItemAsync<Document>("dba/what/colltions/abc", new Cosmos.PartitionKey(doc1Id));
+                await coll.ReadItemAsync<Document>("dba/what/colltions/abc", new Cosmos.PartitionKey(doc1Id));
             }            
             catch (CosmosException e)
             {
@@ -1058,7 +1056,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             try
             {
                 // the url doesn't conform to the schema at at all.
-                ItemResponse<Document> response = await coll.ReadItemAsync<Document>("dbs/what/colltions/abc", new Cosmos.PartitionKey(doc1Id));
+                await coll.ReadItemAsync<Document>("dbs/what/colltions/abc", new Cosmos.PartitionKey(doc1Id));
             }
             catch (CosmosException e)
             {
@@ -1069,9 +1067,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             try
             {
                 // doing a document read with collection link
-                ItemResponse<Document> response = await coll.ReadItemAsync<Document>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId).ToString(), new Cosmos.PartitionKey(doc1Id));
-                Assert.IsNull(response.Resource);
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.NotFound);
+                await coll.ReadItemAsync<Document>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId).ToString(), new Cosmos.PartitionKey(doc1Id));
+                Assert.Fail();
             }
             catch (CosmosException e)
             {
@@ -1812,7 +1809,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
                 // Read collection.
                 ContainerResponse containerResponse = await collection.ReadContainerAsync(requestOptions: new ContainerRequestOptions { PopulateQuotaInfo = true });
-                Assert.IsTrue(int.Parse(containerResponse.Headers[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture) >= 0);
+                Assert.IsTrue(int.Parse(containerResponse.CosmosHeaders[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture) >= 0);
 
                 // Delete and re-create the collection with the same name.
                 await collection.DeleteContainerAsync();
@@ -1821,7 +1818,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 // Read the new collection.
                 // The gateway's cache is stale at this point. This test verifies that the gateway should be able to refresh the cache and returns the response.
                 containerResponse = await collection.ReadContainerAsync(requestOptions: new ContainerRequestOptions { PopulateQuotaInfo = true });
-                Assert.AreEqual(100, int.Parse(containerResponse.Headers[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture));
+                Assert.AreEqual(100, int.Parse(containerResponse.CosmosHeaders[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture));
 
                 // Scenario 2: name based collection put.
 

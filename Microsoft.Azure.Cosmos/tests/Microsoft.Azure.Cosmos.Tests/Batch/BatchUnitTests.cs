@@ -227,9 +227,9 @@ namespace Microsoft.Azure.Cosmos.Tests
             CosmosJsonDotNetSerializer jsonSerializer = new CosmosJsonDotNetSerializer();
             BatchTestHandler testHandler = new BatchTestHandler((request, operations) =>
             {
-                Assert.AreEqual(new Cosmos.PartitionKey(BatchUnitTests.PartitionKey1).ToString(), request.Headers.PartitionKey);
-                Assert.AreEqual(bool.TrueString, request.Headers[HttpConstants.HttpHeaders.IsBatchAtomic]);
-                Assert.AreEqual(bool.TrueString, request.Headers[HttpConstants.HttpHeaders.IsBatchOrdered]);
+                Assert.AreEqual(new Cosmos.PartitionKey(BatchUnitTests.PartitionKey1).ToString(), request.CosmosHeaders.PartitionKey);
+                Assert.AreEqual(bool.TrueString, request.CosmosHeaders[HttpConstants.HttpHeaders.IsBatchAtomic]);
+                Assert.AreEqual(bool.TrueString, request.CosmosHeaders[HttpConstants.HttpHeaders.IsBatchOrdered]);
                 Assert.IsFalse(request.Headers.TryGetValue(HttpConstants.HttpHeaders.ShouldBatchContinueOnError, out string unused));
 
                 Assert.AreEqual(16, operations.Count);
@@ -353,7 +353,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                     Content = await new BatchResponsePayloadWriter(expectedResults).GeneratePayloadAsync()
                 };
 
-                responseMessage.Headers.RequestCharge = requestCharge;
+                responseMessage.CosmosHeaders.RequestCharge = requestCharge;
                 return responseMessage;
             });
 
@@ -541,7 +541,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 RequestMessage request, CancellationToken cancellationToken)
             {
                 BatchTestHandler.VerifyServerRequestProperties(request);
-                List<ItemBatchOperation> operations = await new BatchRequestPayloadReader().ReadPayloadAsync(request.Content);
+                List<ItemBatchOperation> operations = await new BatchRequestPayloadReader().ReadPayloadAsync(request.Content.GetStream());
 
                 this.Received.Add(new Tuple<RequestMessage, List<ItemBatchOperation>>(request, operations));
                 return await this.func(request, operations);

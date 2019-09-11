@@ -101,10 +101,10 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
         private static ResponseMessage GetResponse(HttpStatusCode statusCode, bool includeItem, int subStatusCode = 0)
         {
             ResponseMessage message = new ResponseMessage(statusCode);
-            message.Headers.ContinuationToken = "someContinuation";
+            message.CosmosHeaders.ContinuationToken = "someContinuation";
             if (subStatusCode > 0)
             {
-                message.Headers.SubStatusCode = (Documents.SubStatusCodes)subStatusCode;
+                message.CosmosHeaders.SubStatusCode = (Documents.SubStatusCodes)subStatusCode;
             }
 
             if (includeItem)

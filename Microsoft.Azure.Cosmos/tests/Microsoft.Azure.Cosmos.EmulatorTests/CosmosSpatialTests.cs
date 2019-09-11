@@ -83,10 +83,10 @@
             Assert.IsNotNull(createResponse);
             Assert.AreEqual(HttpStatusCode.Created, createResponse.StatusCode);
 
-            ItemResponse<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
+            global::Azure.Response<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(readResponse);
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
-            Assert.IsNotNull(readResponse.Resource.multiPolygon);
+            //Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
+            Assert.IsNotNull(readResponse.Value.multiPolygon);
 
             IOrderedQueryable<SpatialItem> multipolygonQuery =
               this.documentClient.CreateDocumentQuery<SpatialItem>(this.Container.LinkUri.OriginalString, new FeedOptions() { EnableScanInQuery = true, EnableCrossPartitionQuery = true });
@@ -119,10 +119,10 @@
             Assert.IsNotNull(createResponse);
             Assert.AreEqual(HttpStatusCode.Created, createResponse.StatusCode);
 
-            ItemResponse<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
+            global::Azure.Response<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(readResponse);
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
-            Assert.IsNotNull(readResponse.Resource.polygon);
+            //Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
+            Assert.IsNotNull(readResponse.Value.polygon);
 
             ItemResponse<SpatialItem> deleteResponse = await this.Container.DeleteItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(deleteResponse);
@@ -144,10 +144,10 @@
             Assert.IsNotNull(createResponse);
             Assert.AreEqual(HttpStatusCode.Created, createResponse.StatusCode);
 
-            ItemResponse<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
+            global::Azure.Response<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(readResponse);
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
-            Assert.IsNotNull(readResponse.Resource.lineString);
+            //Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
+            Assert.IsNotNull(readResponse.Value.lineString);
 
             ItemResponse<SpatialItem> deleteResponse = await this.Container.DeleteItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(deleteResponse);
@@ -168,10 +168,10 @@
             Assert.IsNotNull(createResponse);
             Assert.AreEqual(HttpStatusCode.Created, createResponse.StatusCode);
 
-            ItemResponse<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
+            global::Azure.Response<SpatialItem> readResponse = await this.Container.ReadItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(readResponse);
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
-            Assert.IsNotNull(readResponse.Resource.point);
+            //Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
+            Assert.IsNotNull(readResponse.Value.point);
 
             ItemResponse<SpatialItem> deleteResponse = await this.Container.DeleteItemAsync<SpatialItem>(partitionKey: new Cosmos.PartitionKey(spatialItem.partitionKey), id: spatialItem.id);
             Assert.IsNotNull(deleteResponse);

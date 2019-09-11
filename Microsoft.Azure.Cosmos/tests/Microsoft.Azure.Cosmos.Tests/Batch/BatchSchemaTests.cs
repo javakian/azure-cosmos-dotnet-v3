@@ -200,9 +200,9 @@ namespace Microsoft.Azure.Cosmos.Tests
                     x.PopulateRequestOptions(xMessage);
                     y.PopulateRequestOptions(yMessage);
 
-                    foreach (string headerName in xMessage.Headers)
+                    foreach (string headerName in xMessage.CosmosHeaders)
                     {
-                        if (xMessage.Headers[headerName] != yMessage.Headers[headerName])
+                        if (xMessage.CosmosHeaders[headerName] != yMessage.CosmosHeaders[headerName])
                         {
                             return false;
                         }

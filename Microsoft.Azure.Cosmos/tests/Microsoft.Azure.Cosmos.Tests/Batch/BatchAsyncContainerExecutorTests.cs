@@ -150,7 +150,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             cancellationToken: CancellationToken.None);
 
             ResponseMessage responseMessage = new ResponseMessage(HttpStatusCode.Gone) { Content = responseContent };
-            responseMessage.Headers.SubStatusCode = SubStatusCodes.PartitionKeyRangeGone;
+            responseMessage.CosmosHeaders.SubStatusCode = SubStatusCodes.PartitionKeyRangeGone;
             return responseMessage;
         }
 

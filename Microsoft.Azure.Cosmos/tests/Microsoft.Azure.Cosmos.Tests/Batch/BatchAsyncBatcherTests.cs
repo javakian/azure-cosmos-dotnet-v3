@@ -95,7 +95,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 cancellationToken: cancellationToken);
 
                 ResponseMessage responseMessage = new ResponseMessage(HttpStatusCode.Gone) { Content = responseContent };
-                responseMessage.Headers.SubStatusCode = SubStatusCodes.PartitionKeyRangeGone;
+                responseMessage.CosmosHeaders.SubStatusCode = SubStatusCodes.PartitionKeyRangeGone;
 
                 BatchResponse batchresponse = await BatchResponse.PopulateFromContentAsync(
                     responseMessage,

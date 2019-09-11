@@ -506,8 +506,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 Container coll = await db.CreateContainerAsync(containerSetting);
                 Document documentDefinition = new Document { Id = Guid.NewGuid().ToString() };
                 ItemResponse<Document> docResult = await coll.CreateItemAsync<Document>(documentDefinition);
-                Assert.IsTrue(int.Parse(docResult.Headers[WFConstants.BackendHeaders.CurrentWriteQuorum], CultureInfo.InvariantCulture) > 0);
-                Assert.IsTrue(int.Parse(docResult.Headers[WFConstants.BackendHeaders.CurrentReplicaSetSize], CultureInfo.InvariantCulture) > 0);
+                Assert.IsTrue(int.Parse(docResult.CosmosHeaders[WFConstants.BackendHeaders.CurrentWriteQuorum], CultureInfo.InvariantCulture) > 0);
+                Assert.IsTrue(int.Parse(docResult.CosmosHeaders[WFConstants.BackendHeaders.CurrentReplicaSetSize], CultureInfo.InvariantCulture) > 0);
             }
             finally
             {
@@ -565,27 +565,27 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 // Lazy-indexing collection.
                 {
                     ContainerResponse collectionResponse = await lazyContainer.ReadContainerAsync(requestOptions: new ContainerRequestOptions { PopulateQuotaInfo = true });
-                    Assert.IsTrue(int.Parse(collectionResponse.Headers[HttpConstants.HttpHeaders.CollectionLazyIndexingProgress], CultureInfo.InvariantCulture) >= 0,
+                    Assert.IsTrue(int.Parse(collectionResponse.CosmosHeaders[HttpConstants.HttpHeaders.CollectionLazyIndexingProgress], CultureInfo.InvariantCulture) >= 0,
                         "Expect lazy indexer progress when reading lazy collection.");
-                    Assert.AreEqual(100, int.Parse(collectionResponse.Headers[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture),
+                    Assert.AreEqual(100, int.Parse(collectionResponse.CosmosHeaders[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture),
                         "Expect reindexer progress when reading lazy collection.");
                 }
 
                 // Consistent-indexing collection.
                 {
                     ContainerResponse collectionResponse = await consistentContainer.ReadContainerAsync(requestOptions: new ContainerRequestOptions { PopulateQuotaInfo = true });
-                    Assert.IsFalse(collectionResponse.Headers.AllKeys().Contains(HttpConstants.HttpHeaders.CollectionLazyIndexingProgress),
+                    Assert.IsFalse(collectionResponse.CosmosHeaders.AllKeys().Contains(HttpConstants.HttpHeaders.CollectionLazyIndexingProgress),
                         "No lazy indexer progress when reading consistent collection.");
-                    Assert.AreEqual(100, int.Parse(collectionResponse.Headers[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture),
+                    Assert.AreEqual(100, int.Parse(collectionResponse.CosmosHeaders[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture),
                         "Expect reindexer progress when reading consistent collection.");
                 }
 
                 // None-indexing collection.
                 {
                     ContainerResponse collectionResponse = await noneIndexContainer.ReadContainerAsync(requestOptions: new ContainerRequestOptions { PopulateQuotaInfo = true });
-                    Assert.IsFalse(collectionResponse.Headers.AllKeys().Contains(HttpConstants.HttpHeaders.CollectionLazyIndexingProgress),
+                    Assert.IsFalse(collectionResponse.CosmosHeaders.AllKeys().Contains(HttpConstants.HttpHeaders.CollectionLazyIndexingProgress),
                         "No lazy indexer progress when reading none-index collection.");
-                    Assert.AreEqual(100, int.Parse(collectionResponse.Headers[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture),
+                    Assert.AreEqual(100, int.Parse(collectionResponse.CosmosHeaders[HttpConstants.HttpHeaders.CollectionIndexTransformationProgress], CultureInfo.InvariantCulture),
                         "Expect reindexer progress when reading none-index collection.");
                 }
             }

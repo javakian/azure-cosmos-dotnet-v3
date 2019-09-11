@@ -76,7 +76,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             while(true)
             {
                 ContainerResponse readResponse = await container.ReadContainerAsync(requestOptions);
-                string indexTransformationStatus = readResponse.Headers["x-ms-documentdb-collection-index-transformation-progress"];
+                string indexTransformationStatus = readResponse.CosmosHeaders["x-ms-documentdb-collection-index-transformation-progress"];
                 Assert.IsNotNull(indexTransformationStatus);
 
                 if (int.Parse(indexTransformationStatus) == 100)
@@ -682,9 +682,9 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             ItemResponse<dynamic> createItemResponse = await container.CreateItemAsync<dynamic>(payload);
             Assert.IsNotNull(createItemResponse.Resource);
             Assert.AreEqual(createItemResponse.StatusCode, HttpStatusCode.Created);
-            ItemResponse<dynamic> readItemResponse = await container.ReadItemAsync<dynamic>(payload.id, new Cosmos.PartitionKey(payload.user));
-            Assert.IsNotNull(readItemResponse.Resource);
-            Assert.AreEqual(readItemResponse.StatusCode, HttpStatusCode.OK);
+            global::Azure.Response<dynamic> readItemResponse = await container.ReadItemAsync<dynamic>(payload.id, new Cosmos.PartitionKey(payload.user));
+            Assert.IsNotNull(readItemResponse.Value);
+            //Assert.AreEqual(readItemResponse.Status, HttpStatusCode.OK);
 
             containerResponse = await container.DeleteContainerAsync();
             Assert.AreEqual(HttpStatusCode.NoContent, containerResponse.StatusCode);
@@ -694,8 +694,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
         {
             Assert.IsNotNull(containerResponse);
             Assert.IsTrue(containerResponse.RequestCharge > 0);
-            Assert.IsNotNull(containerResponse.Headers);
-            Assert.IsNotNull(containerResponse.Headers.ActivityId);
+            Assert.IsNotNull(containerResponse.CosmosHeaders);
+            Assert.IsNotNull(containerResponse.CosmosHeaders.ActivityId);
 
             ContainerProperties containerSettings = containerResponse.Resource;
             Assert.IsNotNull(containerSettings.Id);

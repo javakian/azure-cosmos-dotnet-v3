@@ -20,10 +20,10 @@ namespace Microsoft.Azure.Cosmos.Tests
 
             TestHandler testHandler = new TestHandler((request, cancellationToken) =>
             {
-                Assert.AreEqual(tokenExpiryInSeconds, int.Parse(request.Headers[Documents.HttpConstants.HttpHeaders.ResourceTokenExpiry]));
+                Assert.AreEqual(tokenExpiryInSeconds, int.Parse(request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.ResourceTokenExpiry]));
                 testHandlerHitCount++;
                 ResponseMessage response = new ResponseMessage(HttpStatusCode.OK, request, errorMessage: null);
-                response.Content = request.Content;
+                response.Content = request.Content.GetStream();
                 return Task.FromResult(response);
             });
 

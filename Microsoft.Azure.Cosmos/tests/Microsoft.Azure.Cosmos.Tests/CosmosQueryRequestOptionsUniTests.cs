@@ -20,7 +20,7 @@ namespace Microsoft.Azure.Cosmos
             RequestMessage testMessage = new RequestMessage();
             requestOption.PopulateRequestOptions(testMessage);
 
-            Assert.IsNull(testMessage.Headers.ContinuationToken);
+            Assert.IsNull(testMessage.CosmosHeaders.ContinuationToken);
         }
     }
 }

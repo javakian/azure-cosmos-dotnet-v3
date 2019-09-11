@@ -560,8 +560,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 Assert.IsTrue(responseResults.Count <= 1);
 
                 pagedStreamResults.AddRange(responseResults);
-                continuationToken = response.Headers.ContinuationToken;
-                Assert.AreEqual(response.ContinuationToken, response.Headers.ContinuationToken);
+                continuationToken = response.CosmosHeaders.ContinuationToken;
+                Assert.AreEqual(response.ContinuationToken, response.CosmosHeaders.ContinuationToken);
             } while (continuationToken != null);
 
             Assert.AreEqual(pagedStreamResults.Count, streamResults.Count);

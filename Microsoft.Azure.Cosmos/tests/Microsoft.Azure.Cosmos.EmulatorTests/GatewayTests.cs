@@ -3138,14 +3138,14 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             ItemResponse<CustomerPOCO> doc = await collection.CreateItemAsync(poco);
 
             // This tests that the existing ReadDocumentAsync API works as expected, you can only access Document properties
-            ItemResponse<CustomerPOCO> documentResponse = await collection.ReadItemAsync<CustomerPOCO>(partitionKey: new Cosmos.PartitionKey(poco.id), id: poco.id);
-            Assert.AreEqual(documentResponse.StatusCode, HttpStatusCode.OK);
-            Assert.IsNotNull(documentResponse.Resource);
+            global::Azure.Response<CustomerPOCO> documentResponse = await collection.ReadItemAsync<CustomerPOCO>(partitionKey: new Cosmos.PartitionKey(poco.id), id: poco.id);
+            //Assert.AreEqual(documentResponse.StatusCode, HttpStatusCode.OK);
+            Assert.IsNotNull(documentResponse.Value);
 
-            Assert.AreEqual(documentResponse.Resource.id, guidId);
+            Assert.AreEqual(documentResponse.Value.id, guidId);
 
             // This tests shows how you can extract the CustomerPOCO from ReadDocumentAsync API, to access POCO properties
-            CustomerPOCO customerPOCO = (CustomerPOCO)(dynamic)documentResponse.Resource;
+            CustomerPOCO customerPOCO = (CustomerPOCO)(dynamic)documentResponse.Value;
             Assert.AreEqual(customerPOCO.BookId, "isbn");
 
             // This tests the implicit operator for ReadDocumentAsync
@@ -3178,14 +3178,14 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             ItemResponse<CustomerObjectFromResource> doc = await collection.CreateItemAsync(objectFromResource);
             // This tests that the existing ReadDocumentAsync API works as expected, you can only access Document properties
-            ItemResponse<CustomerObjectFromResource> documentResponse = await collection.ReadItemAsync<CustomerObjectFromResource>(partitionKey: new Cosmos.PartitionKey(objectFromResource.pk), id: objectFromResource.id);
-            Assert.AreEqual(documentResponse.StatusCode, HttpStatusCode.OK);
-            Assert.IsNotNull(documentResponse.Resource);
+            global::Azure.Response<CustomerObjectFromResource> documentResponse = await collection.ReadItemAsync<CustomerObjectFromResource>(partitionKey: new Cosmos.PartitionKey(objectFromResource.pk), id: objectFromResource.id);
+            //Assert.AreEqual(documentResponse.StatusCode, HttpStatusCode.OK);
+            Assert.IsNotNull(documentResponse.Value);
 
-            Assert.AreEqual(documentResponse.Resource.id, guidId);
+            Assert.AreEqual(documentResponse.Value.id, guidId);
 
             // This tests how you can extract the CustomerObjectFromResource from ReadDocumentAsync API, to access POCO properties
-            CustomerObjectFromResource customerObjectFromResource = (CustomerObjectFromResource)(dynamic)documentResponse.Resource;
+            CustomerObjectFromResource customerObjectFromResource = (CustomerObjectFromResource)(dynamic)documentResponse.Value;
             Assert.AreEqual(customerObjectFromResource.BookId, "isbn1");
 
             // This tests the implicit operator for ReadDocumentAsync

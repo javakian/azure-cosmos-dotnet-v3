@@ -321,9 +321,9 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 {
                     Assert.IsNotNull(response);
                     Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
-                    Assert.IsTrue(response.Headers.RequestCharge > 0);
-                    Assert.IsNotNull(response.Headers.ActivityId);
-                    Assert.IsNotNull(response.Headers.ETag);
+                    Assert.IsTrue(response.CosmosHeaders.RequestCharge > 0);
+                    Assert.IsNotNull(response.CosmosHeaders.ActivityId);
+                    Assert.IsNotNull(response.CosmosHeaders.ETag);
                 }
             }
 
@@ -331,8 +331,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             {
                 Assert.IsNotNull(deleteResponse);
                 Assert.AreEqual(HttpStatusCode.NoContent, deleteResponse.StatusCode);
-                Assert.IsTrue(deleteResponse.Headers.RequestCharge > 0);
-                Assert.IsNotNull(deleteResponse.Headers.ActivityId);
+                Assert.IsTrue(deleteResponse.CosmosHeaders.RequestCharge > 0);
+                Assert.IsNotNull(deleteResponse.CosmosHeaders.ActivityId);
             }
         }
 
@@ -447,8 +447,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 using (ResponseMessage responseMessage =
                     await feedIterator.ReadNextAsync(this.cancellationToken))
                 {
-                    lastContinuationToken = responseMessage.Headers.ContinuationToken;
-                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.Headers.ContinuationToken);
+                    lastContinuationToken = responseMessage.CosmosHeaders.ContinuationToken;
+                    Assert.AreEqual(responseMessage.ContinuationToken, responseMessage.CosmosHeaders.ContinuationToken);
                     Collection<ToDoActivity> response = TestCommon.Serializer.FromStream<CosmosFeedResponseUtil<ToDoActivity>>(responseMessage.Content).Data;
                     foreach (ToDoActivity toDoActivity in response)
                     {
@@ -752,8 +752,8 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                     });
 
                 ResponseMessage response = await feedIterator.ReadNextAsync();
-                lastContinuationToken = response.Headers.ContinuationToken;
-                Assert.AreEqual(response.ContinuationToken, response.Headers.ContinuationToken);
+                lastContinuationToken = response.CosmosHeaders.ContinuationToken;
+                Assert.AreEqual(response.ContinuationToken, response.CosmosHeaders.ContinuationToken);
 
                 Trace.TraceInformation($"ContinuationToken: {lastContinuationToken}");
                 JsonSerializer serializer = new JsonSerializer();
@@ -866,7 +866,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                         ResponseMessage iter = await feedIterator.ReadNextAsync();
                         Assert.IsTrue(iter.IsSuccessStatusCode);
                         Assert.IsNull(iter.ErrorMessage);
-                        totalRequstCharge += iter.Headers.RequestCharge;
+                        totalRequstCharge += iter.CosmosHeaders.RequestCharge;
 
                         ToDoActivity[] activities = TestCommon.Serializer.FromStream<CosmosFeedResponseUtil<ToDoActivity>>(iter.Content).Data.ToArray();
                         Assert.AreEqual(1, activities.Length);
@@ -914,7 +914,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 ResponseMessage iter = await feedIterator.ReadNextAsync();
                 Assert.IsTrue(iter.IsSuccessStatusCode);
                 Assert.IsNull(iter.ErrorMessage);
-                totalRequstCharge += iter.Headers.RequestCharge;
+                totalRequstCharge += iter.CosmosHeaders.RequestCharge;
                 ToDoActivity[] response = TestCommon.Serializer.FromStream<CosmosFeedResponseUtil<ToDoActivity>>(iter.Content).Data.ToArray();
                 Assert.IsTrue(response.Length <= 5);
                 resultList.AddRange(response);
@@ -963,7 +963,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 ResponseMessage iter = await setIterator.ReadNextAsync();
                 Assert.IsTrue(iter.IsSuccessStatusCode);
                 Assert.IsNull(iter.ErrorMessage);
-                totalRequstCharge += iter.Headers.RequestCharge;
+                totalRequstCharge += iter.CosmosHeaders.RequestCharge;
                 Collection<ToDoActivity> response = TestCommon.Serializer.FromStream<CosmosFeedResponseUtil<ToDoActivity>>(iter.Content).Data;
                 foundItems.AddRange(response);
             }
@@ -988,14 +988,14 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             };
             itemRequestOptions.Properties.Add(WFConstants.BackendHeaders.EffectivePartitionKeyString, epk);
 
-            ResponseMessage response = await this.Container.ReadItemStreamAsync(
+            global::Azure.Response response = await this.Container.ReadItemStreamAsync(
                 Guid.NewGuid().ToString(),
                 Cosmos.PartitionKey.Null,
                 itemRequestOptions);
 
             // Ideally it should be NotFound
             // BadReqeust bcoz collection is regular and not binary 
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.Status);
 
             await this.Container.CreateItemAsync<dynamic>(new { id = Guid.NewGuid().ToString(), status = "test" });
             epk = new PartitionKey("test")
@@ -1103,7 +1103,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 ResponseMessage response = await feedIterator.ReadNextAsync();
                 Assert.IsTrue(response.IsSuccessStatusCode);
                 Assert.IsNull(response.ErrorMessage);
-                totalRequstCharge += response.Headers.RequestCharge;
+                totalRequstCharge += response.CosmosHeaders.RequestCharge;
 
                 //Copy the stream and check that the first byte is the correct value
                 MemoryStream memoryStream = new MemoryStream();
@@ -1271,13 +1271,13 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 Assert.AreEqual(PartitionKey.SystemKeyPath, containerResponse.Resource.PartitionKey.Paths[0]);
 
                 //Reading item from fixed container with CosmosContainerSettings.NonePartitionKeyValue.
-                ItemResponse<ToDoActivity> response = await fixedContainer.ReadItemAsync<ToDoActivity>(
+                global::Azure.Response<ToDoActivity> response = await fixedContainer.ReadItemAsync<ToDoActivity>(
                     partitionKey: Cosmos.PartitionKey.None,
                     id: nonPartitionItemId);
 
-                Assert.IsNotNull(response.Resource);
-                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-                Assert.AreEqual(nonPartitionItemId, response.Resource.id);
+                Assert.IsNotNull(response.Value);
+                //Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+                Assert.AreEqual(nonPartitionItemId, response.Value.id);
 
                 //Adding item to fixed container with CosmosContainerSettings.NonePartitionKeyValue.
                 ToDoActivity itemWithoutPK = ToDoActivity.CreateRandomToDoActivity();
@@ -1365,13 +1365,13 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 Assert.AreEqual(HttpStatusCode.NoContent, deleteResponseWithPk.StatusCode);
 
                 //Reading item from partitioned container with CosmosContainerSettings.NonePartitionKeyValue.
-                ItemResponse<ToDoActivity> undefinedItemResponse = await this.Container.ReadItemAsync<ToDoActivity>(
+                global::Azure.Response<ToDoActivity> undefinedItemResponse = await this.Container.ReadItemAsync<ToDoActivity>(
                     partitionKey: Cosmos.PartitionKey.None,
                     id: undefinedPartitionItemId);
 
-                Assert.IsNotNull(undefinedItemResponse.Resource);
-                Assert.AreEqual(HttpStatusCode.OK, undefinedItemResponse.StatusCode);
-                Assert.AreEqual(undefinedPartitionItemId, undefinedItemResponse.Resource.id);
+                Assert.IsNotNull(undefinedItemResponse.Value);
+                //Assert.AreEqual(HttpStatusCode.OK, undefinedItemResponse.Status);
+                Assert.AreEqual(undefinedPartitionItemId, undefinedItemResponse.Value.id);
             }
             finally
             {
@@ -1525,14 +1525,14 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             ItemResponse<ToDoActivity> responseAstype = await this.Container.CreateItemAsync<ToDoActivity>(partitionKey: new Cosmos.PartitionKey(temp.status), item: temp);
 
-            string sessionToken = responseAstype.Headers.Session;
+            string sessionToken = responseAstype.CosmosHeaders.Session;
             Assert.IsNotNull(sessionToken);
 
-            ResponseMessage readResponse = await this.Container.ReadItemStreamAsync(temp.id, new Cosmos.PartitionKey(temp.status), new ItemRequestOptions() { SessionToken = sessionToken });
+            global::Azure.Response readResponse = await this.Container.ReadItemStreamAsync(temp.id, new Cosmos.PartitionKey(temp.status), new ItemRequestOptions() { SessionToken = sessionToken });
 
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
-            Assert.IsNotNull(readResponse.Headers.Session);
-            Assert.AreEqual(sessionToken, readResponse.Headers.Session);
+            Assert.AreEqual(HttpStatusCode.OK, readResponse.Status);
+            Assert.IsTrue(readResponse.Headers.TryGetValue(HttpConstants.HttpHeaders.SessionToken, out string session));
+            Assert.AreEqual(sessionToken, session);
         }
 
         /// <summary>
@@ -1675,7 +1675,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             while (iterator.HasMoreResults)
             {
                 ResponseMessage response = await iterator.ReadNextAsync();
-                Assert.AreEqual(expected, response.StatusCode, $"ExecuteQueryAsync substatuscode: {response.Headers.SubStatusCode} ");
+                Assert.AreEqual(expected, response.StatusCode, $"ExecuteQueryAsync substatuscode: {response.CosmosHeaders.SubStatusCode} ");
             }
         }
 
@@ -1685,7 +1685,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             while (iterator.HasMoreResults)
             {
                 ResponseMessage response = await iterator.ReadNextAsync();
-                Assert.AreEqual(expected, response.StatusCode, $"ExecuteReadFeedAsync substatuscode: {response.Headers.SubStatusCode} ");
+                Assert.AreEqual(expected, response.StatusCode, $"ExecuteReadFeedAsync substatuscode: {response.CosmosHeaders.SubStatusCode} ");
             }
         }
 
@@ -1722,15 +1722,15 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
         private static async Task TestNonePKForNonExistingContainer(Container container)
         {
             // Stream implementation should not throw
-            ResponseMessage response = await container.ReadItemStreamAsync("id1", Cosmos.PartitionKey.None);
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.IsNotNull(response.Headers.ActivityId);
-            Assert.IsNotNull(response.ErrorMessage);
+            global::Azure.Response response = await container.ReadItemStreamAsync("id1", Cosmos.PartitionKey.None);
+            Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
+            Assert.IsTrue(response.Headers.TryGetValue(HttpConstants.HttpHeaders.ActivityId, out string activityId));
+            Assert.IsNotNull(response.ReasonPhrase);
 
             // For typed, it will throw 
             try
             {
-                ItemResponse<string> typedResponse = await container.ReadItemAsync<string>("id1", Cosmos.PartitionKey.None);
+                await container.ReadItemAsync<string>("id1", Cosmos.PartitionKey.None);
                 Assert.Fail("Should throw exception.");
             }
             catch (CosmosException ex)

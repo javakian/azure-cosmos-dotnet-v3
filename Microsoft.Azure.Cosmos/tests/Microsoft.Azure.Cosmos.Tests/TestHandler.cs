@@ -51,7 +51,7 @@
                     ResponseMessage httpResponse = new ResponseMessage(statusCode);
                     if (subStatusCode != SubStatusCodes.Unknown)
                     {
-                        httpResponse.Headers.Add(WFConstants.BackendHeaders.SubStatus,((uint)subStatusCode).ToString(CultureInfo.InvariantCulture));
+                        httpResponse.CosmosHeaders.Add(WFConstants.BackendHeaders.SubStatus,((uint)subStatusCode).ToString(CultureInfo.InvariantCulture));
                     }
 
                     return httpResponse;

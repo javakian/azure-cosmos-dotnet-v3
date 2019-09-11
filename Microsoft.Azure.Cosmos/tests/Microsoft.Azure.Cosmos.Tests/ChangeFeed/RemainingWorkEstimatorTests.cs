@@ -206,7 +206,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Tests
         private static ResponseMessage GetResponse(HttpStatusCode statusCode, string localLsn, string itemLsn = null)
         {
             ResponseMessage message = new ResponseMessage(statusCode);
-            message.Headers.Add(Documents.HttpConstants.HttpHeaders.SessionToken, localLsn);
+            message.CosmosHeaders.Add(Documents.HttpConstants.HttpHeaders.SessionToken, localLsn);
             if (!string.IsNullOrEmpty(itemLsn))
             {
                 JObject firstDocument = new JObject();

@@ -8,6 +8,7 @@ namespace Microsoft.Azure.Cosmos.Core.Tests
     using System.Collections.Generic;
     using System.IO;
     using System.Net.Http;
+    using global::Azure.Core.Pipeline;
     using Microsoft.Azure.Cosmos.Query;
     using Microsoft.Azure.Documents;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -57,7 +58,7 @@ namespace Microsoft.Azure.Cosmos.Core.Tests
             };
 
             RequestMessage httpRequest = new RequestMessage(
-                HttpMethod.Post,
+                RequestMethod.Post,
                 new Uri("/dbs/testdb/colls/testcontainer/docs/testId", UriKind.Relative));
 
             options.PopulateRequestOptions(httpRequest);
@@ -90,7 +91,7 @@ namespace Microsoft.Azure.Cosmos.Core.Tests
             };
 
             RequestMessage httpRequest = new RequestMessage(
-                HttpMethod.Post,
+                RequestMethod.Post,
                 new Uri("/dbs/testdb/colls/testcontainer/docs/testId", UriKind.Relative));
 
             options.PopulateRequestOptions(httpRequest);
@@ -107,7 +108,7 @@ namespace Microsoft.Azure.Cosmos.Core.Tests
             options.PostTriggers = new List<string>() { "postTrigger" };
 
             RequestMessage httpRequest = new RequestMessage(
-                HttpMethod.Post,
+                RequestMethod.Post,
                 new Uri("/dbs/testdb/colls/testcontainer/docs/testId", UriKind.Relative));
 
             options.PopulateRequestOptions(httpRequest);

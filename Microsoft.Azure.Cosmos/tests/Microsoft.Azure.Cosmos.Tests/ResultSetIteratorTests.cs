@@ -40,9 +40,9 @@ namespace Microsoft.Azure.Cosmos.Tests
             options.Object.ConsistencyLevel = (Cosmos.ConsistencyLevel)ConsistencyLevel.BoundedStaleness;
             options.Object.PopulateRequestOptions(request);
 
-            Assert.AreEqual(bool.TrueString, request.Headers[HttpConstants.HttpHeaders.EnableScanInQuery]);
-            Assert.AreEqual(options.Object.SessionToken, request.Headers[HttpConstants.HttpHeaders.SessionToken]);
-            Assert.IsNull(request.Headers[HttpConstants.HttpHeaders.ConsistencyLevel]);
+            Assert.AreEqual(bool.TrueString, request.CosmosHeaders[HttpConstants.HttpHeaders.EnableScanInQuery]);
+            Assert.AreEqual(options.Object.SessionToken, request.CosmosHeaders[HttpConstants.HttpHeaders.SessionToken]);
+            Assert.IsNull(request.CosmosHeaders[HttpConstants.HttpHeaders.ConsistencyLevel]);
             options.Verify(m => m.PopulateRequestOptions(It.Is<RequestMessage>(p => ReferenceEquals(p, request))), Times.Once);
         }
 
@@ -157,7 +157,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             ResponseMessage response = new ResponseMessage();
             if (this.ContinueNextExecution)
             {
-                response.Headers.Add("x-ms-continuation", ResultSetIteratorTests.RandomString(10));
+                response.CosmosHeaders.Add("x-ms-continuation", ResultSetIteratorTests.RandomString(10));
             }
 
             return response;

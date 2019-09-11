@@ -228,8 +228,8 @@ namespace Microsoft.Azure.Cosmos
             ChangeFeedRequestOptions.FillContinuationToken(request, "something");
             requestOptions.PopulateRequestOptions(request);
 
-            Assert.AreEqual("something", request.Headers.IfNoneMatch);
-            Assert.IsNull(request.Headers[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
+            Assert.AreEqual("something", request.CosmosHeaders.IfNoneMatch);
+            Assert.IsNull(request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
         }
 
         [TestMethod]
@@ -240,8 +240,8 @@ namespace Microsoft.Azure.Cosmos
 
             requestOptions.PopulateRequestOptions(request);
 
-            Assert.AreEqual(ChangeFeedRequestOptions.IfNoneMatchAllHeaderValue, request.Headers.IfNoneMatch);
-            Assert.IsNull(request.Headers[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
+            Assert.AreEqual(ChangeFeedRequestOptions.IfNoneMatchAllHeaderValue, request.CosmosHeaders.IfNoneMatch);
+            Assert.IsNull(request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
         }
 
         [TestMethod]
@@ -253,9 +253,9 @@ namespace Microsoft.Azure.Cosmos
             ChangeFeedRequestOptions.FillMaxItemCount(request, 10);
             requestOptions.PopulateRequestOptions(request);
 
-            Assert.AreEqual("10", request.Headers[Documents.HttpConstants.HttpHeaders.PageSize]);
-            Assert.AreEqual(ChangeFeedRequestOptions.IfNoneMatchAllHeaderValue, request.Headers.IfNoneMatch);
-            Assert.IsNull(request.Headers[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
+            Assert.AreEqual("10", request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.PageSize]);
+            Assert.AreEqual(ChangeFeedRequestOptions.IfNoneMatchAllHeaderValue, request.CosmosHeaders.IfNoneMatch);
+            Assert.IsNull(request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
         }
 
         [TestMethod]
@@ -270,8 +270,8 @@ namespace Microsoft.Azure.Cosmos
             ChangeFeedRequestOptions.FillContinuationToken(request, "something");
             requestOptions.PopulateRequestOptions(request);
 
-            Assert.AreEqual("something", request.Headers.IfNoneMatch);
-            Assert.IsNull(request.Headers[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
+            Assert.AreEqual("something", request.CosmosHeaders.IfNoneMatch);
+            Assert.IsNull(request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
         }
 
         [TestMethod]
@@ -285,8 +285,8 @@ namespace Microsoft.Azure.Cosmos
 
             requestOptions.PopulateRequestOptions(request);
 
-            Assert.AreEqual("Tue, 01 Jan 1985 00:00:00 GMT", request.Headers[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
-            Assert.IsNull(request.Headers.IfNoneMatch);
+            Assert.AreEqual("Tue, 01 Jan 1985 00:00:00 GMT", request.CosmosHeaders[Documents.HttpConstants.HttpHeaders.IfModifiedSince]);
+            Assert.IsNull(request.CosmosHeaders.IfNoneMatch);
         }
 
         [TestMethod]

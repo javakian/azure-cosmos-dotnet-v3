@@ -243,12 +243,12 @@ namespace Microsoft.Azure.Cosmos.Tests
         {
             TestHandler testHandler = new TestHandler((request, cancellationToken) =>
             {
-                Assert.IsNotNull(request.Headers.PartitionKey);
+                Assert.IsNotNull(request.CosmosHeaders.PartitionKey);
                 JToken.Parse(Documents.Routing.PartitionKeyInternal.Undefined.ToString());
                 Assert.IsTrue(new JTokenEqualityComparer().Equals(
                         JToken.Parse(Documents.Routing.PartitionKeyInternal.Undefined.ToString()),
-                        JToken.Parse(request.Headers.PartitionKey.ToString())),
-                        "Arguments {0} {1} ", Documents.Routing.PartitionKeyInternal.Undefined.ToString(), request.Headers.PartitionKey.ToString());
+                        JToken.Parse(request.CosmosHeaders.PartitionKey.ToString())),
+                        "Arguments {0} {1} ", Documents.Routing.PartitionKeyInternal.Undefined.ToString(), request.CosmosHeaders.PartitionKey.ToString());
 
                 return Task.FromResult(new ResponseMessage(HttpStatusCode.OK));
             });
@@ -287,11 +287,11 @@ namespace Microsoft.Azure.Cosmos.Tests
                 Assert.IsTrue(request.RequestUri.OriginalString.StartsWith(@"dbs/testdb/colls/testcontainer"));
                 Assert.AreEqual(requestOptions, request.RequestOptions);
                 Assert.AreEqual(ResourceType.Document, request.ResourceType);
-                Assert.IsNotNull(request.Headers.PartitionKey);
-                Assert.AreEqual(partitionKeySerialized, request.Headers.PartitionKey);
+                Assert.IsNotNull(request.CosmosHeaders.PartitionKey);
+                Assert.AreEqual(partitionKeySerialized, request.CosmosHeaders.PartitionKey);
                 testHandlerHitCount++;
                 response = new ResponseMessage(httpStatusCode, request, errorMessage: null);
-                response.Content = request.Content;
+                response.Content = request.Content.GetStream();
                 return Task.FromResult(response);
             });
 
