@@ -7,18 +7,19 @@ namespace Microsoft.Azure.Cosmos
     using System;
     using System.IO;
     using System.Net;
+    using global::Azure;
     using Microsoft.Azure.Documents;
 
     /// <summary>
     /// The Cosmos Client exception
     /// </summary>
-    public class CosmosException : Exception
+    public class CosmosException : RequestFailedException
     {
         internal CosmosException(
             HttpStatusCode statusCode,
             string message,
             Error error = null)
-            : base(message)
+            : base((int)statusCode, message)
         {
             this.StatusCode = statusCode;
             this.Error = error;
@@ -29,7 +30,7 @@ namespace Microsoft.Azure.Cosmos
             ResponseMessage cosmosResponseMessage,
             string message,
             Error error = null)
-            : base(message)
+            : base(cosmosResponseMessage.Status, message)
         {
             if (cosmosResponseMessage != null)
             {
@@ -56,6 +57,33 @@ namespace Microsoft.Azure.Cosmos
             this.Error = error;
         }
 
+        internal CosmosException(
+            global::Azure.Response response,
+            string message,
+            Error error = null)
+            : base(response.Status, message)
+        {
+            if (response != null)
+            {
+                ResponseMessage responseMessage = response as ResponseMessage;
+                this.CosmosHeaders = responseMessage?.CosmosHeaders ?? new CosmosHeaders();
+
+                this.ActivityId = this.CosmosHeaders.ActivityId;
+                this.RequestCharge = this.CosmosHeaders.RequestCharge;
+                this.RetryAfter = this.CosmosHeaders.RetryAfter;
+                this.SubStatusCode = (int)this.CosmosHeaders.SubStatusCode;
+                if (this.CosmosHeaders.ContentLengthAsLong > 0)
+                {
+                    using (StreamReader responseReader = new StreamReader(response.ContentStream))
+                    {
+                        this.ResponseBody = responseReader.ReadToEnd();
+                    }
+                }
+            }
+
+            this.Error = error;
+        }
+
         /// <summary>
         /// Create a <see cref="CosmosException"/>
         /// </summary>
@@ -70,7 +98,7 @@ namespace Microsoft.Azure.Cosmos
             int subStatusCode,
             string activityId,
             double requestCharge)
-            : base(message)
+            : base((int)statusCode, message)
         {
             this.SubStatusCode = subStatusCode;
             this.StatusCode = statusCode;

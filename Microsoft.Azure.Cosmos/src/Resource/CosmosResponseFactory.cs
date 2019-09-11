@@ -6,6 +6,7 @@ namespace Microsoft.Azure.Cosmos
 {
     using System;
     using System.Threading.Tasks;
+    using global::Azure.Core;
     using Microsoft.Azure.Cosmos.Scripts;
 
     internal class CosmosResponseFactory
@@ -221,17 +222,25 @@ namespace Microsoft.Azure.Cosmos
             return jsonSerializer.FromStream<T>(cosmosResponseMessage.Content);
         }
 
-        internal T ToObjectInternal<T>(global::Azure.Response cosmosResponseMessage, CosmosSerializer jsonSerializer)
+        internal T ToObjectInternal<T>(global::Azure.Response response, CosmosSerializer jsonSerializer)
         {
             //Throw the exception
-            //TODO
+            //TODO : Add helper?
+            if (response.Status < 200 || response.Status >= 300)
+            {
+                string message = $"Response status code does not indicate success: {response.Status} Reason: ({response.ReasonPhrase}).";
 
-            if (cosmosResponseMessage.ContentStream == null)
+                throw new CosmosException(
+                        response,
+                        message);
+            }
+
+            if (response.ContentStream == null)
             {
                 return default(T);
             }
 
-            return jsonSerializer.FromStream<T>(cosmosResponseMessage.ContentStream);
+            return jsonSerializer.FromStream<T>(response.ContentStream);
         }
     }
 }

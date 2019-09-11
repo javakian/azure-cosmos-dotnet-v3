@@ -133,7 +133,7 @@ namespace Microsoft.Azure.Cosmos
         public override int Status => (int)this.StatusCode;
 
         /// <inheritdoc />
-        public override string ReasonPhrase => throw new NotImplementedException();
+        public override string ReasonPhrase => this.ErrorMessage;
 
         /// <inheritdoc />
         public override Stream ContentStream { get => this.content; set => this.content = value; }
@@ -252,10 +252,5 @@ namespace Microsoft.Azure.Cosmos
 
         /// <inheritdoc />
         protected override IEnumerable<HttpHeader> EnumerateHeaders() => this.CosmosHeaders.GetHttpHeaders();
-
-        private static string JoinHeaderValue(IEnumerable<string> values)
-        {
-            return string.Join(",", values);
-        }
     }
 }
