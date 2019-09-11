@@ -427,7 +427,7 @@ namespace Microsoft.Azure.Cosmos
         /// ]]>
         /// </code>
         /// </example>
-        public abstract Task<ResponseMessage> ReadItemStreamAsync(
+        public abstract Task<global::Azure.Response> ReadItemStreamAsync(
                     string id,
                     PartitionKey partitionKey,
                     ItemRequestOptions requestOptions = null,
@@ -472,7 +472,7 @@ namespace Microsoft.Azure.Cosmos
         /// ]]>
         /// </code>
         /// </example>
-        public abstract Task<ItemResponse<T>> ReadItemAsync<T>(
+        public abstract Task<global::Azure.Response<T>> ReadItemAsync<T>(
             string id,
             PartitionKey partitionKey,
             ItemRequestOptions requestOptions = null,

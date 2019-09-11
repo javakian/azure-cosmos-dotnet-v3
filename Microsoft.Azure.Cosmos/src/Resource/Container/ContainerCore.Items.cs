@@ -73,13 +73,13 @@ namespace Microsoft.Azure.Cosmos
             return this.ClientContext.ResponseFactory.CreateItemResponseAsync<T>(response);
         }
 
-        public override Task<ResponseMessage> ReadItemStreamAsync(
+        public override async Task<global::Azure.Response> ReadItemStreamAsync(
                     string id,
                     PartitionKey partitionKey,
                     ItemRequestOptions requestOptions = null,
                     CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ProcessItemStreamAsync(
+            return await this.ProcessItemStreamAsync(
                 partitionKey,
                 id,
                 null,
@@ -89,13 +89,13 @@ namespace Microsoft.Azure.Cosmos
                 cancellationToken: cancellationToken);
         }
 
-        public override Task<ItemResponse<T>> ReadItemAsync<T>(
+        public override Task<global::Azure.Response<T>> ReadItemAsync<T>(
             string id,
             PartitionKey partitionKey,
             ItemRequestOptions requestOptions = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Task<ResponseMessage> response = this.ReadItemStreamAsync(
+            Task<global::Azure.Response> response = this.ReadItemStreamAsync(
                 partitionKey: partitionKey,
                 id: id,
                 requestOptions: requestOptions,

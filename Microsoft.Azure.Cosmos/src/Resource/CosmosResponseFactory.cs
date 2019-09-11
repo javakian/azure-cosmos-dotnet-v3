@@ -61,6 +61,16 @@ namespace Microsoft.Azure.Cosmos
             });
         }
 
+        internal Task<global::Azure.Response<T>> CreateItemResponseAsync<T>(
+            Task<global::Azure.Response> cosmosResponseMessageTask)
+        {
+            return this.ProcessMessageAsync(cosmosResponseMessageTask, (cosmosResponseMessage) =>
+            {
+                T item = this.ToObjectInternal<T>(cosmosResponseMessage, this.cosmosSerializer);
+                return new global::Azure.Response<T>(cosmosResponseMessage, item);
+            });
+        }
+
         internal Task<ContainerResponse> CreateContainerResponseAsync(
             Container container,
             Task<ResponseMessage> cosmosResponseMessageTask)
@@ -190,6 +200,14 @@ namespace Microsoft.Azure.Cosmos
             }
         }
 
+        internal async Task<T> ProcessMessageAsync<T>(Task<global::Azure.Response> cosmosResponseTask, Func<global::Azure.Response, T> createResponse)
+        {
+            using (global::Azure.Response message = await cosmosResponseTask)
+            {
+                return createResponse(message);
+            }
+        }
+
         internal T ToObjectInternal<T>(ResponseMessage cosmosResponseMessage, CosmosSerializer jsonSerializer)
         {
             //Throw the exception
@@ -201,6 +219,19 @@ namespace Microsoft.Azure.Cosmos
             }
 
             return jsonSerializer.FromStream<T>(cosmosResponseMessage.Content);
+        }
+
+        internal T ToObjectInternal<T>(global::Azure.Response cosmosResponseMessage, CosmosSerializer jsonSerializer)
+        {
+            //Throw the exception
+            //TODO
+
+            if (cosmosResponseMessage.ContentStream == null)
+            {
+                return default(T);
+            }
+
+            return jsonSerializer.FromStream<T>(cosmosResponseMessage.ContentStream);
         }
     }
 }

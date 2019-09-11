@@ -51,9 +51,9 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.LeaseManagement
 
                 try
                 {
-                    ItemResponse<DocumentServiceLeaseCore> response = await this.container.ReadItemAsync<DocumentServiceLeaseCore>(
+                    var response = await this.container.ReadItemAsync<DocumentServiceLeaseCore>(
                     itemId, partitionKey).ConfigureAwait(false);
-                    DocumentServiceLeaseCore serverLease = response.Resource;
+                    DocumentServiceLeaseCore serverLease = response.Value;
 
                     DefaultTrace.TraceInformation(
                     "Lease with token {0} update failed because the lease with concurrency token '{1}' was updated by host '{2}' with concurrency token '{3}'. Will retry, {4} retry(s) left.",
