@@ -307,12 +307,12 @@ namespace Microsoft.Azure.Cosmos.Tests
             Assert.IsNotNull(itemResponse);
             Assert.AreEqual(httpStatusCode, itemResponse.StatusCode);
 
-            itemResponse = await container.ReadItemAsync<dynamic>(
+            global::Azure.Response<dynamic> itemResponseR = await container.ReadItemAsync<dynamic>(
                 partitionKey: partitionKey,
                 id: testItem.id,
                 requestOptions: requestOptions);
-            Assert.IsNotNull(itemResponse);
-            Assert.AreEqual(httpStatusCode, itemResponse.StatusCode);
+            Assert.IsNotNull(itemResponseR);
+            Assert.IsNotNull(itemResponseR.Value);
 
             itemResponse = await container.UpsertItemAsync<dynamic>(
                 item: testItem,

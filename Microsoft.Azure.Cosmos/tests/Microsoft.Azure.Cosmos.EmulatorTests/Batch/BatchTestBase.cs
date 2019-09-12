@@ -259,7 +259,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 ItemRequestOptions requestOptions = BatchTestBase.GetItemRequestOptions(doc, isSchematized, useEpk);
                 global::Azure.Response response = await container.ReadItemStreamAsync(id, partitionKey, requestOptions);
 
-                Assert.AreEqual(HttpStatusCode.OK, response.Status);
+                Assert.AreEqual((int)HttpStatusCode.OK, response.Status);
                 Assert.AreEqual(doc, BatchTestBase.StreamToTestDoc(response.ContentStream, isSchematized));
 
                 if (eTag != null)
@@ -290,7 +290,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             global::Azure.Response response = await container.ReadItemStreamAsync(id, partitionKey, requestOptions);
 
-            Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
+            Assert.AreEqual((int)HttpStatusCode.NotFound, response.Status);
         }
 
         protected static RequestOptions GetUpdatedBatchRequestOptions(

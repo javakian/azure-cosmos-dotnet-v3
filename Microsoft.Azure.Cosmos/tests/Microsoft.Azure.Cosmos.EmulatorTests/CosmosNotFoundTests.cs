@@ -163,7 +163,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
         private void VerifyNotFoundResponse(global::Azure.Response response)
         {
             Assert.IsNotNull(response);
-            Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
+            Assert.AreEqual((int)HttpStatusCode.NotFound, response.Status);
         }
     }
 }

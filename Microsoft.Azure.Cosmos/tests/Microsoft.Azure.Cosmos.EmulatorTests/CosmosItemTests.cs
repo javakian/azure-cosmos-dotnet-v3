@@ -149,9 +149,9 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             Assert.IsNotNull(response.MaxResourceQuota);
             Assert.IsNotNull(response.CurrentResourceQuotaUsage);
 
-            ItemResponse<dynamic> readResponse = await this.Container.ReadItemAsync<dynamic>(id: testItem.id, partitionKey: Cosmos.PartitionKey.None);
+            global::Azure.Response<dynamic> readResponse = await this.Container.ReadItemAsync<dynamic>(id: testItem.id, partitionKey: Cosmos.PartitionKey.None);
             Assert.IsNotNull(readResponse);
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
+            Assert.IsNotNull(readResponse.Value);
 
             ItemResponse<dynamic> deleteResponse = await this.Container.DeleteItemAsync<dynamic>(id: testItem.id, partitionKey: Cosmos.PartitionKey.None);
             Assert.IsNotNull(deleteResponse);
@@ -189,9 +189,9 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             Assert.IsNotNull(response);
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
 
-            ItemResponse<dynamic> readResponse = await multiPartPkContainer.ReadItemAsync<dynamic>(id: testItem.id, partitionKey: new Cosmos.PartitionKey("pk1"));
+            global::Azure.Response<dynamic> readResponse = await multiPartPkContainer.ReadItemAsync<dynamic>(id: testItem.id, partitionKey: new Cosmos.PartitionKey("pk1"));
             Assert.IsNotNull(readResponse);
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.StatusCode);
+            Assert.IsNotNull(readResponse.Value);
 
             ItemResponse<dynamic> deleteResponse = await multiPartPkContainer.DeleteItemAsync<dynamic>(id: testItem.id, partitionKey: new Cosmos.PartitionKey("pk1"));
             Assert.IsNotNull(deleteResponse);
@@ -995,7 +995,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             // Ideally it should be NotFound
             // BadReqeust bcoz collection is regular and not binary 
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.Status);
+            Assert.AreEqual((int)HttpStatusCode.BadRequest, response.Status);
 
             await this.Container.CreateItemAsync<dynamic>(new { id = Guid.NewGuid().ToString(), status = "test" });
             epk = new PartitionKey("test")
@@ -1530,7 +1530,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             global::Azure.Response readResponse = await this.Container.ReadItemStreamAsync(temp.id, new Cosmos.PartitionKey(temp.status), new ItemRequestOptions() { SessionToken = sessionToken });
 
-            Assert.AreEqual(HttpStatusCode.OK, readResponse.Status);
+            Assert.AreEqual((int)HttpStatusCode.OK, readResponse.Status);
             Assert.IsTrue(readResponse.Headers.TryGetValue(HttpConstants.HttpHeaders.SessionToken, out string session));
             Assert.AreEqual(sessionToken, session);
         }
@@ -1723,7 +1723,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
         {
             // Stream implementation should not throw
             global::Azure.Response response = await container.ReadItemStreamAsync("id1", Cosmos.PartitionKey.None);
-            Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
+            Assert.AreEqual((int)HttpStatusCode.NotFound, response.Status);
             Assert.IsTrue(response.Headers.TryGetValue(HttpConstants.HttpHeaders.ActivityId, out string activityId));
             Assert.IsNotNull(response.ReasonPhrase);
 
