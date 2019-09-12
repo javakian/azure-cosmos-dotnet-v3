@@ -331,7 +331,7 @@ namespace Microsoft.Azure.Cosmos
                 return null;
             }
 
-            CosmosStreamContent cosmosContent = (CosmosStreamContent)content;
+            CosmosStreamContent cosmosContent = content as CosmosStreamContent;
             if (cosmosContent != null)
             {
                 return cosmosContent.Detach();
