@@ -171,12 +171,7 @@ namespace Microsoft.Azure.Cosmos
 
         internal string GetResourceAddress()
         {
-            RequestMessage requestMessage = (RequestMessage)this.RequestMessage;
-            if (requestMessage == null)
-            {
-                throw new NotImplementedException();
-            }
-
+            RequestMessage requestMessage = this.RequestMessage as RequestMessage;
             string resourceLink = requestMessage?.RequestUri.OriginalString;
             if (PathsHelper.TryParsePathSegments(
                 resourceLink,
