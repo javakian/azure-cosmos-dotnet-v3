@@ -76,7 +76,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 options.Properties.Add(PreProcessingTestHandler.StatusCodeName, code);
 
                 global::Azure.Response<object> response = await container.ReadItemAsync<object>("id1", new Cosmos.PartitionKey("pk1"), options);
-                Assert.IsNotNull(response.Value);
+                Assert.IsNotNull(response);
             }
 
             // Meta-data operations

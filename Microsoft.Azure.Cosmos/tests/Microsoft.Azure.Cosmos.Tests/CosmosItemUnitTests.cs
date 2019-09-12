@@ -312,7 +312,6 @@ namespace Microsoft.Azure.Cosmos.Tests
                 id: testItem.id,
                 requestOptions: requestOptions);
             Assert.IsNotNull(itemResponseR);
-            Assert.IsNotNull(itemResponseR.Value);
 
             itemResponse = await container.UpsertItemAsync<dynamic>(
                 item: testItem,
