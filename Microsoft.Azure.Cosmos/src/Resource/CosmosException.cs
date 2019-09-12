@@ -70,27 +70,10 @@ namespace Microsoft.Azure.Cosmos
                 ResponseMessage responseMessage = response as ResponseMessage;
                 this.CosmosHeaders = responseMessage?.CosmosHeaders ?? new CosmosHeaders();
 
-                // TODO: Need some helpers for this
-                if (response.Headers.TryGetValue(HttpConstants.HttpHeaders.ActivityId, out string activityId))
-                {
-                    this.ActivityId = activityId;
-                }
-
-                if (response.Headers.TryGetValue(HttpConstants.HttpHeaders.RetryAfterInMilliseconds, out string retryAfter))
-                {
-                    this.RetryAfter = CosmosHeaders.GetRetryAfter(retryAfter);
-                }
-
-                if (response.Headers.TryGetValue(HttpConstants.HttpHeaders.RequestCharge, out string requestCharge))
-                {
-                    this.RequestCharge = string.IsNullOrEmpty(requestCharge) ? 0 : double.Parse(requestCharge, CultureInfo.InvariantCulture);
-                }
-
-                if (response.Headers.TryGetValue(WFConstants.BackendHeaders.SubStatus, out string subStatusCode))
-                {
-                    this.SubStatusCode = (int)CosmosHeaders.GetSubStatusCodes(subStatusCode);
-                }
-
+                this.ActivityId = this.CosmosHeaders.ActivityId;
+                this.RequestCharge = this.CosmosHeaders.RequestCharge;
+                this.RetryAfter = this.CosmosHeaders.RetryAfter;
+                this.SubStatusCode = (int)this.CosmosHeaders.SubStatusCode;
                 if (response.ContentStream != null && response.ContentStream.Length > 0)
                 {
                     using (StreamReader responseReader = new StreamReader(response.ContentStream))
