@@ -326,6 +326,11 @@ namespace Microsoft.Azure.Cosmos
     {
         public static Stream GetStream(this HttpPipelineRequestContent content)
         {
+            if (content == null)
+            {
+                return null;
+            }
+
             CosmosStreamContent cosmosContent = (CosmosStreamContent)content;
             if (cosmosContent != null)
             {
@@ -417,7 +422,7 @@ namespace Microsoft.Azure.Cosmos
 
         public override void Dispose()
         {
-            if (this.stream == null)
+            if (this.stream != null)
             {
                 this.stream.Dispose();
             }
