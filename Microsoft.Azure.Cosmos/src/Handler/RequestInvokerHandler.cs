@@ -84,7 +84,7 @@ namespace Microsoft.Azure.Cosmos.Handlers
             return responseCreator(responseMessage);
         }
 
-        public virtual async Task<ResponseMessage> SendAsync(
+        public virtual Task<ResponseMessage> SendAsync(
             Uri resourceUri,
             ResourceType resourceType,
             OperationType operationType,
@@ -95,60 +95,17 @@ namespace Microsoft.Azure.Cosmos.Handlers
             Action<RequestMessage> requestEnricher,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resourceUri == null)
-            {
-                throw new ArgumentNullException(nameof(resourceUri));
-            }
+            RequestMessage request = this.CreateRequestMessage(
+                        resourceUri,
+                        resourceType,
+                        operationType,
+                        requestOptions,
+                        cosmosContainerCore,
+                        partitionKey,
+                        streamPayload,
+                        requestEnricher);
 
-            RequestMethod method = RequestInvokerHandler.GetHttpMethod(operationType);
-
-            RequestMessage request = new RequestMessage(method, resourceUri)
-            {
-                OperationType = operationType,
-                ResourceType = resourceType,
-                RequestOptions = requestOptions,
-            };
-
-            if (streamPayload != null)
-            {
-                request.Content = new CosmosStreamContent(streamPayload);
-            }
-
-            if (partitionKey != null)
-            {
-                if (cosmosContainerCore == null && Object.ReferenceEquals(partitionKey, Cosmos.PartitionKey.None))
-                {
-                    throw new ArgumentException($"{nameof(cosmosContainerCore)} can not be null with partition key as PartitionKey.None");
-                }
-                else if (partitionKey.Value.IsNone)
-                {
-                    try
-                    {
-                        PartitionKeyInternal partitionKeyInternal = await cosmosContainerCore.GetNonePartitionKeyValueAsync(cancellationToken);
-                        request.CosmosHeaders.PartitionKey = partitionKeyInternal.ToJsonString();
-                    }
-                    catch (DocumentClientException dce)
-                    {
-                        return dce.ToCosmosResponseMessage(request);
-                    }
-                    catch (CosmosException ce)
-                    {
-                        return ce.ToCosmosResponseMessage(request);
-                    }
-                }
-                else
-                {
-                    request.CosmosHeaders.PartitionKey = partitionKey.ToString();
-                }
-            }
-
-            if (operationType == OperationType.Upsert)
-            {
-                request.CosmosHeaders.IsUpsert = bool.TrueString;
-            }
-
-            requestEnricher?.Invoke(request);
-            return await this.SendAsync(request, cancellationToken);
+            return this.SendAsync(request, cancellationToken);
         }
 
         internal static RequestMethod GetHttpMethod(
@@ -182,6 +139,72 @@ namespace Microsoft.Azure.Cosmos.Handlers
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public RequestMessage CreateRequestMessage(
+            Uri resourceUri,
+            ResourceType resourceType,
+            OperationType operationType,
+            RequestOptions requestOptions,
+            ContainerCore cosmosContainerCore,
+            Cosmos.PartitionKey? partitionKey,
+            Stream streamPayload,
+            Action<RequestMessage> requestEnricher)
+        {
+            if (resourceUri == null)
+            {
+                throw new ArgumentNullException(nameof(resourceUri));
+            }
+
+            RequestMethod method = RequestInvokerHandler.GetHttpMethod(operationType);
+
+            RequestMessage request = new RequestMessage(method, resourceUri)
+            {
+                OperationType = operationType,
+                ResourceType = resourceType,
+                RequestOptions = requestOptions,
+            };
+
+            if (streamPayload != null)
+            {
+                request.Content = new CosmosStreamContent(streamPayload);
+            }
+
+            if (partitionKey != null)
+            {
+                if (cosmosContainerCore == null && Object.ReferenceEquals(partitionKey, Cosmos.PartitionKey.None))
+                {
+                    throw new ArgumentException($"{nameof(cosmosContainerCore)} can not be null with partition key as PartitionKey.None");
+                }
+                //else if (partitionKey.Value.IsNone)
+                //{
+                //    try
+                //    {
+                //        PartitionKeyInternal partitionKeyInternal = await cosmosContainerCore.GetNonePartitionKeyValueAsync(cancellationToken);
+                //        request.CosmosHeaders.PartitionKey = partitionKeyInternal.ToJsonString();
+                //    }
+                //    catch (DocumentClientException dce)
+                //    {
+                //        return dce.ToCosmosResponseMessage(request);
+                //    }
+                //    catch (CosmosException ce)
+                //    {
+                //        return ce.ToCosmosResponseMessage(request);
+                //    }
+                //}
+                else
+                {
+                    request.CosmosHeaders.PartitionKey = partitionKey.ToString();
+                }
+            }
+
+            if (operationType == OperationType.Upsert)
+            {
+                request.CosmosHeaders.IsUpsert = bool.TrueString;
+            }
+
+            requestEnricher?.Invoke(request);
+            return request;
         }
 
         private void FillMultiMasterContext(RequestMessage request)
