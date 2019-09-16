@@ -616,6 +616,22 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             Assert.AreEqual(itemIds.Count, 0);
         }
 
+        [TestMethod]
+        public async Task ItemAsyncCollection()
+        {
+            IList<ToDoActivity> deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
+            HashSet<string> itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
+            await foreach (ToDoActivity toDoActivity in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
+            {
+                if (itemIds.Contains(toDoActivity.id))
+                {
+                    itemIds.Remove(toDoActivity.id);
+                }
+            }
+
+            Assert.AreEqual(itemIds.Count, 0);
+        }
+
 
         [TestMethod]
         public async Task ItemStreamContractVerifier()
