@@ -621,7 +621,7 @@ namespace Microsoft.Azure.Cosmos
                 cosmosSerializer: userSerializer,
                 propertiesSerializer: this.ClientOptions.PropertiesSerializer);
 
-            this.ClientContext = new ClientContextCore(
+            this.ClientContext = new PipelineClientContextCore(
                 client: this,
                 clientOptions: this.ClientOptions,
                 userJsonSerializer: userSerializer,
