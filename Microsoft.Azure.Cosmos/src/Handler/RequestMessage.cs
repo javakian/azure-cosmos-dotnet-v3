@@ -92,7 +92,7 @@ namespace Microsoft.Azure.Cosmos
         /// <summary>
         /// TBD
         /// </summary>
-        public override string ClientRequestId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string ClientRequestId { get; set; }
 
         private readonly Lazy<Dictionary<string, object>> properties = new Lazy<Dictionary<string, object>>(RequestMessage.CreateDictionary);
 
