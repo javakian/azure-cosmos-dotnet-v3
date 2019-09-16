@@ -5,6 +5,7 @@
 namespace Microsoft.Azure.Cosmos
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using global::Azure.Core;
     using Microsoft.Azure.Cosmos.Scripts;
@@ -46,6 +47,25 @@ namespace Microsoft.Azure.Cosmos
             return ReadFeedResponse<T>.CreateResponse<T>(
                        cosmosResponseMessage,
                        this.cosmosSerializer);
+        }
+
+        internal IReadOnlyList<T> CreateQueryPageResponse<T>(
+            ResponseMessage cosmosResponseMessage)
+        {
+            //Throw the exception
+            cosmosResponseMessage.EnsureSuccessStatusCode();
+
+            using (cosmosResponseMessage)
+            {
+                IReadOnlyList<T> resources = default(IReadOnlyList<T>);
+                if (cosmosResponseMessage.Content != null)
+                {
+                    CosmosFeedResponseUtil<T> response = this.cosmosSerializer.FromStream<CosmosFeedResponseUtil<T>>(cosmosResponseMessage.Content);
+                    resources = response.Data;
+                }
+
+                return resources;
+            }
         }
 
         internal Task<ItemResponse<T>> CreateItemResponseAsync<T>(

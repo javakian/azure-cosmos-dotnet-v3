@@ -841,6 +841,48 @@ namespace Microsoft.Azure.Cosmos
         ///  This method creates a query for items under a container in an Azure Cosmos database using a SQL statement with parameterized values. It returns a FeedIterator.
         ///  For more information on preparing SQL statements with parameterized values, please see <see cref="QueryDefinition"/>.
         /// </summary>
+        /// <param name="queryDefinition">The cosmos SQL query definition.</param>
+        /// <param name="continuationToken">(Optional) The continuation token in the Azure Cosmos DB service.</param>
+        /// <param name="requestOptions">(Optional) The options for the item query request <see cref="QueryRequestOptions"/></param>
+        /// <param name="cancellationToken">(Optional) </param>
+        /// <returns>An iterator to go through the items.</returns>
+        /// <example>
+        /// Create a query to get all the ToDoActivity that have a cost greater than 9000
+        /// <code language="c#">
+        /// <![CDATA[
+        /// public class ToDoActivity{
+        ///     public string id {get; set;}
+        ///     public string status {get; set;}
+        ///     public int cost {get; set;}
+        /// }
+        /// 
+        /// QueryDefinition queryDefinition = new QueryDefinition("select * from ToDos t where t.cost > @expensive")
+        ///     .WithParameter("@expensive", 9000);
+        /// FeedIterator<ToDoActivity> feedIterator = this.Container.GetItemQueryIterator<ToDoActivity>(
+        ///     queryDefinition,
+        ///     null,
+        ///     new QueryRequestOptions() { PartitionKey = new PartitionKey("Error")});
+        ///
+        /// while (feedIterator.HasMoreResults)
+        /// {
+        ///     foreach(var item in await feedIterator.ReadNextAsync()){
+        ///     {
+        ///         Console.WriteLine(item.cost); 
+        ///     }
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public abstract global::Azure.AsyncCollection<T> GetItemQueryAsyncCollection<T>(
+            QueryDefinition queryDefinition,
+            string continuationToken = null,
+            QueryRequestOptions requestOptions = null,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///  This method creates a query for items under a container in an Azure Cosmos database using a SQL statement with parameterized values. It returns a FeedIterator.
+        ///  For more information on preparing SQL statements with parameterized values, please see <see cref="QueryDefinition"/>.
+        /// </summary>
         /// <param name="queryText">The cosmos SQL query text.</param>
         /// <param name="continuationToken">(Optional) The continuation token in the Azure Cosmos DB service.</param>
         /// <param name="requestOptions">(Optional) The options for the item query request <see cref="QueryRequestOptions"/></param>

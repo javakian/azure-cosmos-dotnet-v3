@@ -286,6 +286,31 @@ namespace Microsoft.Azure.Cosmos
                 responseCreator: this.ClientContext.ResponseFactory.CreateQueryFeedResponse<T>);
         }
 
+        public override global::Azure.AsyncCollection<T> GetItemQueryAsyncCollection<T>(
+            QueryDefinition queryDefinition,
+            string continuationToken = null,
+            QueryRequestOptions requestOptions = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            requestOptions = requestOptions ?? new QueryRequestOptions();
+
+            if (requestOptions.IsEffectivePartitionKeyRouting)
+            {
+                requestOptions.PartitionKey = null;
+            }
+
+            PageIteratorCore<T> pageIterator = new PageIteratorCore<T>(
+                this.ClientContext,
+                this.LinkUri,
+                resourceType: ResourceType.Document,
+                queryDefinition: null,
+                continuationToken: continuationToken,
+                options: requestOptions,
+                responseCreator: this.ClientContext.ResponseFactory.CreateQueryPageResponse<T>);
+
+            return PageResponseEnumerator.CreateAsyncEnumerable(continuation => pageIterator.GetPageAsync(continuation, cancellationToken));
+        }
+
         public override IOrderedQueryable<T> GetItemLinqQueryable<T>(
             bool allowSynchronousQueryExecution = false,
             string continuationToken = null,
