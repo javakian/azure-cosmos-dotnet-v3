@@ -88,12 +88,32 @@ namespace Microsoft.Azure.Cosmos
 
         internal override async Task<ResponseMessage> ProcessResourceOperationStreamAsync(Uri resourceUri, ResourceType resourceType, OperationType operationType, RequestOptions requestOptions, ContainerCore cosmosContainerCore, PartitionKey? partitionKey, Stream streamPayload, Action<RequestMessage> requestEnricher, CancellationToken cancellationToken)
         {
-            RequestMessage requestMessage = this.RequestHandler.CreateRequestMessage(resourceUri, resourceType, operationType, requestOptions, cosmosContainerCore, partitionKey, streamPayload, requestEnricher);
-            // Should populate/generate in some smart way
-            requestMessage.ClientRequestId = Guid.NewGuid().ToString();
-            // Should just return the Response, but it would involve changing the API in many places
-            global::Azure.Response response = await this.pipeline.SendRequestAsync(requestMessage, cancellationToken);
-            return response as ResponseMessage;
+            DiagnosticScope scope = this.pipeline.Diagnostics.CreateScope($"{resourceType}-{operationType}");
+            try
+            {
+                scope.AddAttribute("resourceUri", resourceUri);
+                scope.AddAttribute("resourceType", resourceType);
+                scope.AddAttribute("operationType", operationType);
+                scope.AddAttribute("container", cosmosContainerCore.LinkUri);
+                scope.Start();
+                using (RequestMessage requestMessage = this.RequestHandler.CreateRequestMessage(resourceUri, resourceType, operationType, requestOptions, cosmosContainerCore, partitionKey, streamPayload, requestEnricher))
+                {
+                    // Should populate/generate in some smart way
+                    requestMessage.ClientRequestId = Guid.NewGuid().ToString();
+                    // Should just return the Response, but it would involve changing the API in many places
+                    global::Azure.Response response = await this.pipeline.SendRequestAsync(requestMessage, cancellationToken);
+                    return response as ResponseMessage;
+                }
+            }
+            catch (Exception exception)
+            {
+                scope.Failed(exception);
+                throw;
+            }
+            finally
+            {
+                scope.Dispose();
+            }
         }
 
         internal override void ValidateResource(string id)
