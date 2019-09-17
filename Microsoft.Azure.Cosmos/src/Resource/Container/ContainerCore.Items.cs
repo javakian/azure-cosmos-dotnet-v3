@@ -286,7 +286,7 @@ namespace Microsoft.Azure.Cosmos
                 responseCreator: this.ClientContext.ResponseFactory.CreateQueryFeedResponse<T>);
         }
 
-        public override global::Azure.AsyncCollection<T> GetItemQueryAsyncCollection<T>(
+        public override IAsyncEnumerable<global::Azure.Page<T>> GetItemQueryAsyncCollection<T>(
             QueryDefinition queryDefinition,
             string continuationToken = null,
             QueryRequestOptions requestOptions = null,
@@ -308,7 +308,7 @@ namespace Microsoft.Azure.Cosmos
                 options: requestOptions,
                 responseCreator: this.ClientContext.ResponseFactory.CreateQueryPageResponse<T>);
 
-            return PageResponseEnumerator.CreateAsyncEnumerable(continuation => pageIterator.GetPageAsync(continuation, cancellationToken));
+            return PageResponseEnumerator.CreateAsyncEnumerable(continuation => pageIterator.GetPageAsync(continuation, cancellationToken)).ByPage(continuationToken);
         }
 
         public override IOrderedQueryable<T> GetItemLinqQueryable<T>(

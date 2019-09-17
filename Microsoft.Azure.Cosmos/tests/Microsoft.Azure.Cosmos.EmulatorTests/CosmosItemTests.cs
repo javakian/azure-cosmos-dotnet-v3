@@ -621,11 +621,15 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
         {
             IList<ToDoActivity> deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
             HashSet<string> itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
-            await foreach (ToDoActivity toDoActivity in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
+            await foreach (global::Azure.Page<ToDoActivity> page in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
             {
-                if (itemIds.Contains(toDoActivity.id))
+                // continuation is in page.ContinuationToken
+                foreach (ToDoActivity toDoActivity in page.Values)
                 {
-                    itemIds.Remove(toDoActivity.id);
+                    if (itemIds.Contains(toDoActivity.id))
+                    {
+                        itemIds.Remove(toDoActivity.id);
+                    }
                 }
             }
 
