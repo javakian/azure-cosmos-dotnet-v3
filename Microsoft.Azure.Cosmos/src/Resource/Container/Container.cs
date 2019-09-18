@@ -873,7 +873,7 @@ namespace Microsoft.Azure.Cosmos
         /// ]]>
         /// </code>
         /// </example>
-        public abstract IAsyncEnumerable<global::Azure.Page<T>> GetItemQueryAsyncCollection<T>(
+        public abstract global::Azure.AsyncCollection<T> GetItemQueryAsyncCollection<T>(
             QueryDefinition queryDefinition,
             string continuationToken = null,
             QueryRequestOptions requestOptions = null,

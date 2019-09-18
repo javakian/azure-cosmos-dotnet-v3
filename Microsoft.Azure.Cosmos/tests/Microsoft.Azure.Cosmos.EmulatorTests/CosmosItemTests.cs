@@ -619,9 +619,10 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
         [TestMethod]
         public async Task ItemAsyncCollection()
         {
+            // per page
             IList<ToDoActivity> deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
             HashSet<string> itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
-            await foreach (global::Azure.Page<ToDoActivity> page in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
+            await foreach (global::Azure.Page<ToDoActivity> page in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }).ByPage(null))
             {
                 // continuation is in page.ContinuationToken
                 foreach (ToDoActivity toDoActivity in page.Values)
@@ -630,6 +631,18 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                     {
                         itemIds.Remove(toDoActivity.id);
                     }
+                }
+            }
+
+            Assert.AreEqual(itemIds.Count, 0);
+
+            deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
+            itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
+            await foreach (ToDoActivity toDoActivity in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
+            {
+                if (itemIds.Contains(toDoActivity.id))
+                {
+                    itemIds.Remove(toDoActivity.id);
                 }
             }
 
