@@ -647,6 +647,24 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             }
 
             Assert.AreEqual(itemIds.Count, 0);
+
+            deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
+            itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
+            int iterations = 0;
+            await foreach (global::Azure.Response response in this.Container.GetItemQueryStreamAsync("SELECT * FROM docs", null, new QueryRequestOptions() { MaxItemCount = 1 }))
+            {
+                iterations++;
+                foreach (ToDoActivity toDoActivity in TestCommon.Serializer.FromStream<CosmosFeedResponseUtil<ToDoActivity>>(response.ContentStream).Data)
+                {
+                    if (itemIds.Contains(toDoActivity.id))
+                    {
+                        itemIds.Remove(toDoActivity.id);
+                    }
+                }
+            }
+
+            Assert.IsTrue(iterations >= 3);
+            Assert.AreEqual(itemIds.Count, 0);
         }
 
 

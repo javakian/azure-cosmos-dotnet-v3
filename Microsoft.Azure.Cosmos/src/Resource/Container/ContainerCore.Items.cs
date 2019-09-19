@@ -9,6 +9,7 @@ namespace Microsoft.Azure.Cosmos
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -233,6 +234,45 @@ namespace Microsoft.Azure.Cosmos
                 queryDefinition,
                 continuationToken,
                 requestOptions);
+        }
+
+        public override async IAsyncEnumerable<global::Azure.Response> GetItemQueryStreamAsync(
+           string queryText = null,
+           string continuationToken = null,
+           QueryRequestOptions requestOptions = null,
+           [EnumeratorCancellation] CancellationToken cancellationToken = default(CancellationToken))
+        {
+            SqlQuerySpec sqlQuerySpec = null;
+            if (queryText != null)
+            {
+                QueryDefinition queryDefinition = new QueryDefinition(queryText);
+                sqlQuerySpec = queryDefinition?.ToSqlQuerySpec();
+            }
+
+            requestOptions = requestOptions ?? new QueryRequestOptions();
+
+            if (requestOptions.IsEffectivePartitionKeyRouting)
+            {
+                requestOptions.PartitionKey = null;
+            }
+
+            CosmosQueryExecutionContextFactory contextFactory = new CosmosQueryExecutionContextFactory(
+                client: this.queryClient,
+                resourceTypeEnum: ResourceType.Document,
+                operationType: OperationType.Query,
+                resourceType: typeof(QueryResponse),
+                sqlQuerySpec: sqlQuerySpec,
+                continuationToken: continuationToken,
+                queryRequestOptions: requestOptions,
+                resourceLink: this.LinkUri,
+                isContinuationExpected: true,
+                allowNonValueAggregateQuery: true,
+                correlatedActivityId: Guid.NewGuid());
+
+            while (contextFactory.HasMoreResults)
+            {
+                yield return await contextFactory.ReadNextAsync(cancellationToken);
+            }
         }
 
         public override FeedIterator GetItemQueryStreamIterator(

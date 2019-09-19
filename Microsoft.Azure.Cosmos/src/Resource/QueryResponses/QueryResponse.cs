@@ -54,6 +54,8 @@ namespace Microsoft.Azure.Cosmos
             this.QueryHeaders.ResourceType,
             this.CosmosSerializationOptions);
 
+        public override Stream ContentStream => this.Content;
+
         internal virtual IEnumerable<CosmosElement> CosmosElements { get; }
 
         internal virtual CosmosQueryResponseMessageHeaders QueryHeaders => (CosmosQueryResponseMessageHeaders)this.CosmosHeaders;
