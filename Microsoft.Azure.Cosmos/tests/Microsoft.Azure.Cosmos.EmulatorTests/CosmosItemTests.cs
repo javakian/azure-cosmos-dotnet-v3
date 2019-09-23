@@ -636,6 +636,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             Assert.AreEqual(itemIds.Count, 0);
 
+            // enumerator of T
             deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
             itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
             await foreach (ToDoActivity toDoActivity in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
@@ -648,6 +649,20 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             Assert.AreEqual(itemIds.Count, 0);
 
+            // This one is weird
+            deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
+            itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
+            await foreach (global::Azure.Response<ToDoActivity> response in this.Container.GetItemQueryAsyncCollection<ToDoActivity>(null, null, new QueryRequestOptions() { MaxItemCount = 1 }))
+            {
+                if (itemIds.Contains(response.Value.id))
+                {
+                    itemIds.Remove(response.Value.id);
+                }
+            }
+
+            Assert.AreEqual(itemIds.Count, 0);
+
+            // for Streams
             deleteList = await ToDoActivity.CreateRandomItems(this.Container, 3, randomPartitionKey: true);
             itemIds = deleteList.Select(x => x.id).ToHashSet<string>();
             int iterations = 0;
